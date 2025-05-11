@@ -1,0 +1,115 @@
+/* Tailwind CSS v4 */
+@import 'tailwindcss';
+
+/* Glass Effect */
+.glass-effect {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(120px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(120px) saturate(180%) !important;
+  filter: blur(0px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Custom Font Declarations */
+@font-face {
+  font-family: 'ArticulatCF-Medium';
+  src: url('/fonts/ArticulatCF-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ArticulatCF-Regular';
+  src: url('/fonts/ArticulatCF-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --background: #212223;
+  --foreground: #171717;
+}
+
+/* Theme Variables */
+:root {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: 'ArticulatCF-Regular', Arial, sans-serif;
+  --font-mono: monospace;
+  --font-heading: 'ArticulatCF-Medium', Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #212223;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'ArticulatCF-Regular', Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, .title, .label, button, label {
+  font-family: 'ArticulatCF-Medium', Arial, Helvetica, sans-serif;
+}
+
+/* Color Change Animation with Smooth Fade In/Out */
+@keyframes color-change {
+  /* Pink color */
+  0%, 100% {
+    opacity: 0; /* Start/end transparent */
+  }
+  5%, 28% {
+    opacity: 1; /* Fully visible */
+    background-image: linear-gradient(to bottom, 
+      rgba(255, 0, 128, 0.4) 0%, 
+      rgba(255, 0, 128, 0) 25%,
+      rgba(255, 0, 128, 0) 100%);
+  }
+  
+  /* Blue color */
+  33% {
+    opacity: 0; /* Transparent between colors */
+  }
+  38%, 61% {
+    opacity: 1; /* Fully visible */
+    background-image: linear-gradient(to bottom, 
+      rgba(0, 128, 255, 0.4) 0%, 
+      rgba(0, 128, 255, 0) 25%,
+      rgba(0, 128, 255, 0) 100%);
+  }
+  
+  /* Green color */
+  66% {
+    opacity: 0; /* Transparent between colors */
+  }
+  71%, 94% {
+    opacity: 1; /* Fully visible */
+    background-image: linear-gradient(to bottom, 
+      rgba(128, 255, 0, 0.4) 0%, 
+      rgba(128, 255, 0, 0) 25%,
+      rgba(128, 255, 0, 0) 100%);
+  }
+}
+
+.animated-gradient {
+  position: relative;
+}
+
+.animated-gradient::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%; /* Cover the entire screen */
+  animation: color-change 15s ease infinite; /* 15 seconds total with smooth transitions */
+  z-index: 1;
+  pointer-events: none;
+}

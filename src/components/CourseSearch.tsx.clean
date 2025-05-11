@@ -1,0 +1,231 @@
+'use client';
+
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { courses, Course } from '../data/courses';
+import { Command } from 'cmdk';
+
+export default function CourseSearch() {
+  const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  
+  const filteredCourses = searchQuery 
+    ? courses.filter(course => 
+        course.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (course.description && course.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : courses;
+
+  // Handle search focus on open
+  useEffect(() => {
+    if (open && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [open]);
+
+  // Handle keyboard escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (selectedCourse) {
+          setSelectedCourse(null);
+        } else if (open) {
+          setOpen(false);
+          setSearchQuery('');
+        }
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [open, selectedCourse]);
+
+  // Prevent scrolling when overlay is open
+  useEffect(() => {
+    if (open || selectedCourse) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open, selectedCourse]);
+
+  const handleCourseClick = (course: Course) => {
+    setSelectedCourse(course);
+    setOpen(false);
+  };
+
+  const handleOverlayClose = () => {
+    setSelectedCourse(null);
+  };
+
+  return (
+    <div className="w-full max-w-md mx-auto relative">
+      {/* Search Trigger Button */}
+      {!open && (
+        <div className="mb-4">
+          <motion.button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="w-full px-4 py-3 bg-[#333333] text-white rounded-md focus:outline-none cursor-pointer font-body flex items-center"
+            whileHover={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}
+          >
+            <span className="flex-1 text-left">Search course...</span>
+            <span className="text-gray-400">⌘K</span>
+          </motion.button>
+        </div>
+      )}
+
+      {/* Course Buttons (when not in search mode) */}
+      {!open && !selectedCourse && (
+        <div className="flex flex-wrap gap-2">
+          {courses.slice(0, 3).map((course) => (
+            <motion.button 
+              key={course.id}
+              className="flex items-center gap-2 px-4 py-2 rounded-md text-white transition-all font-heading"
+              style={{ backgroundColor: course.backgroundColor || '#333333' }}
+              onClick={() => handleCourseClick(course)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <span>{course.label}</span>
+            </motion.button>
+          ))}
+        </div>
+      )}
+
+      {/* CMDK Dialog */}
+      <AnimatePresence>
+        {open && (
+          <>
+            {/* Backdrop */}
+            <motion.div 
+              className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setOpen(false)}
+            />
+            
+            {/* Dialog Container */}
+            <div className="fixed inset-0 z-[70] flex items-center justify-center px-4 pointer-events-none">
+              <motion.div
+                className="w-full max-w-2xl pointer-events-auto"
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ type: 'spring', damping: 20 }}
+              >
+                <Command 
+                  className="bg-[#1a1a1a] rounded-lg shadow-2xl overflow-hidden"
+                >
+                  <div className="p-4 border-b border-[#333] flex items-center">
+                    <Command.Input 
+                      ref={searchInputRef}
+                      value={searchQuery}
+                      onValueChange={setSearchQuery}
+                      placeholder="Search course"
+                      className="w-full px-4 py-3 bg-[#333333] text-white rounded-md focus:outline-none font-body"
+                    />
+                    <button 
+                      className="ml-4 text-gray-400 hover:text-white text-xl"
+                      onClick={() => setOpen(false)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <Command.List className="max-h-[60vh] overflow-y-auto p-2">
+                    {loading && <Command.Loading>Loading courses...</Command.Loading>}
+
+                    <Command.Empty className="p-6 text-center text-gray-400 font-body">
+                      No courses found for "{searchQuery}"
+                    </Command.Empty>
+
+                    <Command.Group heading="Available Courses" className="p-2">
+                      {filteredCourses.map((course) => (
+                        <Command.Item
+                          key={course.id}
+                          value={course.id}
+                          className="p-3 hover:bg-[#333] rounded-md flex items-center gap-3 cursor-pointer my-1 aria-selected:bg-[#333]"
+                          onSelect={() => handleCourseClick(course)}
+                        >
+                          <span className="w-8 h-8 flex items-center justify-center">
+                            <div className="w-6 h-6 rounded-full bg-blue-400"></div>
+                          </span>
+                          <div>
+                            <div className="text-white font-heading">{course.label}</div>
+                            {course.description && (
+                              <div className="text-[#999] text-sm truncate font-body">
+                                {course.description.length > 60 
+                                  ? `${course.description.substring(0, 60)}...` 
+                                  : course.description}
+                              </div>
+                            )}
+                          </div>
+                        </Command.Item>
+                      ))}
+                    </Command.Group>
+                  </Command.List>
+                </Command>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+      
+      {/* Course Detail Overlay */}
+      <AnimatePresence>
+        {selectedCourse && (
+          <motion.div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleOverlayClose}
+          >
+            <motion.div 
+              className="w-full max-w-2xl bg-[#1a1a1a] rounded-lg p-6 shadow-2xl"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-2xl font-heading text-white">{selectedCourse.label}</h2>
+                <button
+                  className="text-gray-400 hover:text-white text-xl"
+                  onClick={handleOverlayClose}
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="text-gray-300 mb-6 font-body">{selectedCourse.description}</p>
+              <div className="flex justify-end">
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-heading"
+                  onClick={handleOverlayClose}
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
