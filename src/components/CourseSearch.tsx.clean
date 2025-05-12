@@ -130,7 +130,7 @@ export default function CourseSearch() {
                 transition={{ type: 'spring', damping: 20 }}
               >
                 <Command 
-                  className="bg-[#1a1a1a] rounded-lg shadow-2xl overflow-hidden"
+                  className="bg-[#21262D] rounded-lg shadow-2xl overflow-hidden"
                 >
                   <div className="p-4 border-b border-[#333] flex items-center">
                     <Command.Input 
@@ -198,7 +198,7 @@ export default function CourseSearch() {
             onClick={handleOverlayClose}
           >
             <motion.div 
-              className="w-full max-w-2xl bg-[#1a1a1a] rounded-lg p-6 shadow-2xl"
+              className="w-full max-w-2xl bg-[#21262D] rounded-lg p-6 shadow-2xl"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}

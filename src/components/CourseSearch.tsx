@@ -135,7 +135,7 @@ export default function CourseSearch() {
             {/* Dialog */}
             <div className="fixed inset-0 flex items-center justify-center p-4">
               <motion.div 
-                className="relative z-20 bg-[#1a1a1a] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#333]"
+                className="relative z-20 bg-[#21262D] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#333]"
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}

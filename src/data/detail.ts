@@ -108,7 +108,7 @@ export const courseDetails: Record<string, CourseDetail> = {
     id: 'aws',
     fullTitle: 'Certificat professionnel d’architecte de solutions cloud AWS',
     subtitle: 'Démarrez pour devenir Architecte de Solutions AWS. Acquérez les compétences nécessaires pour concevoir des architectures sur AWS et préparez-vous à l’examen AWS Certified Solutions Architect – Associate.',
-    backgroundGradient: 'linear-gradient(180deg,rgba(255, 153, 0, 1) 0%, rgba(20, 20, 21, 1) 70%)',
+    backgroundGradient: 'linear-gradient(180deg,rgba(255, 153, 0, 1) 0%, rgba(3, 17, 23, 1) 70%)',
     enrollmentCount: 76904,
     rating: 4.8,
     reviewCount: 1523,
@@ -175,14 +175,14 @@ export const courseDetails: Record<string, CourseDetail> = {
         name: 'Mylian Ndongo',
         role: 'Apprenant depuis 2019',
         imageUrl: '/Images/testimonials/mylian-ndongo.jpg',
-        text: 'Pouvoir suivre les cours à mon propre rythme a été une expérience incroyable.',
+        text: 'Before Worketyamo, I had never built a full-stack application from scratch—now I’ve launched two production-ready projects and landed my dream role as a Software Engineer at a top tech firm. The intensive bootcamp curriculum, hands-on mentorship, and real-world project experience transformed my confidence and skills in just 12 weeks.',
         stars: 5
       },
       {
         name: 'Amélie Dubois',
         role: 'Apprenante depuis 2020',
         imageUrl: '/Images/testimonials/amelie-dubois.jpg',
-        text: 'Les exemples pratiques et les cas d’étude sont très pertinents.',
+        text: 'Before Worketyamo, I had never built a full-stack application from scratch—now I’ve launched two production-ready projects and landed my dream role as a Software Engineer at a top tech firm. The intensive bootcamp curriculum, hands-on mentorship, and real-world project experience transformed my confidence and skills in just 12 weeks.',
         stars: 5
       }
     ]
