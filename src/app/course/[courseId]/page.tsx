@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import { Quote, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -188,6 +188,17 @@ export default function CoursePage() {
   // State to track scroll position
   const [isScrolled, setIsScrolled] = useState(false);
   
+  // State to track which modules are expanded
+  const [expandedModules, setExpandedModules] = useState<Record<number, boolean>>({});  
+  
+  // Toggle expanded state for a specific module
+  const toggleModule = (index: number) => {
+    setExpandedModules(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+  
   // Effect to handle scroll events
   useEffect(() => {
     const handleScroll = () => {
@@ -321,22 +332,83 @@ export default function CoursePage() {
         <div className="container mx-auto px-4">
           {/* What you'll learn */}
           <section className="pb-20 flex flex-col gap-5 md:flex-row justify-between ">
-            <div>
+            <div className="w-full">
 
             <h2 className="text-2xl font-heading mb-6">Ce que vous apprendrez</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:max-w-3xl max-w-full">
-              {courseDetail.modules.map((module, index) => (
-                <div key={index} className="max-w-full md:max-xs bg-[#21262D]/90 backdrop-blur-md py-4 px-6 rounded-lg border border-white/5 shadow-sm hover:shadow-md transition-all duration-300 hover:border-white/10">
-                  <h3 className="text-lg font-heading">{module.title}</h3>
-                  <p className="text-[#C3C3C3] text-sm font-body">{module.description}</p>
-                </div>
-              ))}
+            <div className="w-full md:max-w-2xl overflow-hidden rounded-lg shadow-md">
+              {courseDetail.modules.map((module, index) => {
+                const isExpanded = expandedModules[index] || false;
+                
+                return (
+                  <motion.div 
+                    key={index} 
+                    className={`w-full bg-[#21262D]/90 backdrop-blur-md py-4 px-4 sm:px-6 border-t first:border-t-0 border-b last:border-b-0 border-white/5 ${index === 0 ? 'rounded-t-lg' : ''} ${index === courseDetail.modules.length - 1 ? 'rounded-b-lg' : ''}`}
+                    layout={false} // Disable layout animation to prevent jumping
+                  >
+                    <div 
+                      className="flex justify-between items-start sm:items-center cursor-pointer" 
+                      onClick={() => toggleModule(index)}
+                    >
+                      <div className="flex flex-col-reverse">
+                        <span className="text-gray-400 font-normal text-xs sm:text-sm mb-1 sm:mb-0">Module {index + 1}</span>
+                        <h3 className="text-base sm:text-lg font-heading pr-6 sm:pr-0">{module.title}</h3>
+                      </div>
+                      <motion.div
+                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="text-white/70 flex-shrink-0 ml-2"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </motion.div>
+                    </div>
+                    
+                    {/* Expandable content */}
+                    <AnimatePresence mode="sync" initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="overflow-hidden mt-3 sm:mt-4"
+                        >
+                          <p className="text-[#C3C3C3] text-xs sm:text-sm font-body mb-3">{module.description}</p>
+                          
+                          {/* Topics tags */}
+                          {module.topics && module.topics.length > 0 && (
+                            <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
+                              {module.topics.map((topic, idx) => (
+                                <span 
+                                  key={idx} 
+                                  className="text-[10px] sm:text-xs bg-[#313842] px-2 py-1 rounded-md text-white/70 mb-1"
+                                >
+                                  {topic}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {module.detailedContent && (
+                            <div className="pt-3 sm:pt-4 border-t border-white/5">
+                              <p className="text-[#E9E9E9] text-xs sm:text-sm font-body leading-relaxed">
+                                {module.detailedContent}
+                              </p>
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
             </div>
             </div>
 
             {/* Instructors */}
           {courseDetail.instructors && courseDetail.instructors.length > 0 && (
-            <section className="">
+            <section className="w-full max-w-full md:max-w-md">
               <h2 className="text-2xl font-heading mb-6">Formateurs</h2>
               <div className="flex flex-col gap-6">
                 {courseDetail.instructors.map((instructor, index) => (
