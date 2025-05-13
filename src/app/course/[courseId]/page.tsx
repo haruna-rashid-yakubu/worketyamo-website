@@ -3,11 +3,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import { Quote, Star } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { getCourseDetailById } from '@/data/detail';
-import { courses } from '@/data/courses';
 import { useParams } from 'next/navigation';
+import { courses } from '@/data/courses';
+import { getCourseDetailById } from '@/data/detail';
+import Link from 'next/link';
+import Image from 'next/image';
+import RegistrationForm from '@/components/RegistrationForm';
 import { ArrowLeft, Images, Linkedin, Languages } from 'lucide-react';
 import backsquare from '../../../../public/Images/icons/back-square.svg'
 
@@ -188,6 +189,9 @@ export default function CoursePage() {
   // State to track scroll position
   const [isScrolled, setIsScrolled] = useState(false);
   
+  // State for registration form overlay
+  const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
+  
   // State to track which modules are expanded
   const [expandedModules, setExpandedModules] = useState<Record<number, boolean>>({});  
   
@@ -286,7 +290,10 @@ export default function CoursePage() {
                 <p className="text-[#E9E9E9] mt-2 font-body">{courseDetail.subtitle}</p>
                 
                 <div className="mt-4">
-                  <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors font-heading">
+                  <button 
+                    className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors font-heading"
+                    onClick={() => setIsRegistrationFormOpen(true)}
+                  >
                     S'inscrire
                   </button>
                   <p className="text-sm text-[#E9E9E9] mt-2 font-body">{courseDetail.enrollmentCount?.toLocaleString()} déjà inscrits</p>
@@ -336,7 +343,7 @@ export default function CoursePage() {
 
             <h2 className="text-2xl font-heading mb-6">Ce que vous apprendrez</h2>
             <div className="w-full md:max-w-2xl overflow-hidden rounded-lg shadow-md">
-              {courseDetail.modules.map((module, index) => {
+              {courseDetail.modules.map((module: any, index: number) => {
                 const isExpanded = expandedModules[index] || false;
                 
                 return (
@@ -346,7 +353,7 @@ export default function CoursePage() {
                     layout={false} // Disable layout animation to prevent jumping
                   >
                     <div 
-                      className="flex justify-between items-start sm:items-center cursor-pointer" 
+                      className="flex justify-between items-start cursor-pointer" 
                       onClick={() => toggleModule(index)}
                     >
                       <div className="flex flex-col-reverse">
@@ -379,7 +386,7 @@ export default function CoursePage() {
                           {/* Topics tags */}
                           {module.topics && module.topics.length > 0 && (
                             <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
-                              {module.topics.map((topic, idx) => (
+                              {module.topics.map((topic: string, idx: number) => (
                                 <span 
                                   key={idx} 
                                   className="text-[10px] sm:text-xs bg-[#313842] px-2 py-1 rounded-md text-white/70 mb-1"
@@ -411,7 +418,7 @@ export default function CoursePage() {
             <section className="w-full max-w-full md:max-w-md">
               <h2 className="text-2xl font-heading mb-6">Formateurs</h2>
               <div className="flex flex-col gap-6">
-                {courseDetail.instructors.map((instructor, index) => (
+                {courseDetail.instructors.map((instructor: any, index: number) => (
                   <div key={index} className="flex items-start gap-4 bg-[#21262D]/90 backdrop-blur-md p-5 rounded-lg border border-white/5 hover:border-white/10 hover:shadow-md transition-all duration-300">
                     {instructor.imageUrl ? (
                       <Image 
@@ -444,12 +451,11 @@ export default function CoursePage() {
           </section>
           
           
-          
           {/* Skills you'll gain */}
           <section className="mb-12">
             <h2 className="text-2xl font-heading mb-6">Compétences à acquérir</h2>
             <div className="flex flex-wrap gap-3 max-w-2xl">
-              {courseDetail.skills.map((skill, index) => (
+              {courseDetail.skills && courseDetail.skills.map((skill: any, index: number) => (
                 <div key={index} className="bg-[#21262D]/90 backdrop-blur-sm py-2 px-4 rounded-lg text-sm font-body border border-white/5 hover:border-white/10 transition-colors">
                   {skill.name}
                 </div>
@@ -549,14 +555,14 @@ export default function CoursePage() {
                       }
                     }}
                   >
-                    Why people choose Worketyamo for their career
+                    Pourquoi choisir Worketyamo pour sa carrière
                   </motion.h2>
                 </div>
               
                 {/* Testimonial Cards below the header */}
                 <div className="w-full mt-2 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {courseDetail.testimonials.map((testimonial, index) => (
+                  {courseDetail.testimonials.map((testimonial: any, index: number) => (
                     <motion.div 
                       key={index} 
                       className="bg-gradient-to-br from-white/10 to-black/10 backdrop-blur-lg border border-white/20 shadow-lg p-4 rounded-lg bg-opacity-30"
@@ -603,6 +609,14 @@ export default function CoursePage() {
       
         </div>
       </div>
+
+      {/* Registration Form Overlay */}
+      <RegistrationForm 
+        isOpen={isRegistrationFormOpen}
+        onClose={() => setIsRegistrationFormOpen(false)}
+        courseTitle={courseDetail.fullTitle}
+        courseId={courseId}
+      />
     </div>
   );
 }

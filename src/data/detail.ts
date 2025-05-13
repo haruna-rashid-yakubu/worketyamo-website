@@ -103,6 +103,22 @@ export const courseDetails: Record<string, CourseDetail> = {
       }
     ],
     languages: ['Anglais', 'Français', 'Espagnol'],
+    testimonials: [
+      {
+        name: 'Mylian Ndongo',
+        role: 'Apprenant depuis 2019',
+        imageUrl: '/Images/testimonials/mylian-ndongo.jpg',
+        text: 'Before Worketyamo, I had never built a full-stack application from scratch—now I’ve launched two production-ready projects and landed my dream role as a Software Engineer at a top tech firm. The intensive bootcamp curriculum, hands-on mentorship, and real-world project experience transformed my confidence and skills in just 12 weeks.',
+        stars: 5
+      },
+      {
+        name: 'Amélie Dubois',
+        role: 'Apprenante depuis 2020',
+        imageUrl: '/Images/testimonials/amelie-dubois.jpg',
+        text: 'Before Worketyamo, I had never built a full-stack application from scratch—now I’ve launched two production-ready projects and landed my dream role as a Software Engineer at a top tech firm. The intensive bootcamp curriculum, hands-on mentorship, and real-world project experience transformed my confidence and skills in just 12 weeks.',
+        stars: 5
+      }
+    ],
     shareable: true,
     shareableText: 'Ajoutez à votre profil LinkedIn',
     industryRecognized: true,
@@ -372,7 +388,7 @@ export const courseDetails: Record<string, CourseDetail> = {
   }, 
  "ai" : {
   id: 'ai-automation',
-  fullTitle: 'Bootcamp AI Automation – 4 semaines intensives',
+  fullTitle: 'Bootcamp AI Automation',
   subtitle: 'Automatisez vos workflows grâce à l’IA et aux API les plus puissantes avec notre formation 100 % pratique.',
   backgroundGradient: 'linear-gradient(180deg, #FF6F61 0%, #0D1117 80%)',
   enrollmentCount: 2540,
@@ -456,7 +472,7 @@ export const courseDetails: Record<string, CourseDetail> = {
 }, 
 'burp': {
   id: 'burp-suite',
-  fullTitle: 'Bootcamp Burp Suite – 4 semaines intensives',
+  fullTitle: 'Bootcamp Burp Suite',
   subtitle: 'Renforcez la sécurité de vos applications web et maîtrisez Burp Suite avec notre bootcamp 100 % pratique.',
   backgroundGradient: 'linear-gradient(180deg, #E53935 0%, #0D1117  80%)',
   enrollmentCount: 1980,
@@ -546,7 +562,7 @@ export const courseDetails: Record<string, CourseDetail> = {
 }, 
 "python" : {
   id: 'python',
-  fullTitle: 'Bootcamp Python – 4 semaines intensives',
+  fullTitle: 'Bootcamp Python',
   subtitle: 'Devenez un développeur Python opérationnel et créez des scripts et applications fiables grâce à notre bootcamp 100 % pratique.',
   backgroundGradient: 'linear-gradient(180deg, #FFD743 0%, #0D1117 80%)',
   enrollmentCount: 5400,
@@ -636,7 +652,7 @@ export const courseDetails: Record<string, CourseDetail> = {
 }, 
 'github': {
   id: 'git-github',
-  fullTitle: 'Bootcamp Git & GitHub (+ GitHub Actions) – 4 semaines intensives',
+  fullTitle: 'Bootcamp Git & GitHub (+ GitHub Actions)',
   subtitle: 'Maîtrisez le versioning, collaborez efficacement et automatisez vos pipelines CI/CD avec Git & GitHub.',
   backgroundGradient: 'linear-gradient(180deg, #3A098B 0%, #0D1117 80%)',
   enrollmentCount: 3650,
