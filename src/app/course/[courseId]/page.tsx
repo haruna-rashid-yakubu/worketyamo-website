@@ -257,7 +257,7 @@ export default function CoursePage() {
           </Link>
           <Image 
                    src="/Images/worketyamo.svg" 
-                   alt="Worketyamo logo" 
+                   alt="Worketyamo" 
                    width={200} 
                    height={40}
                    className='mb-20' 

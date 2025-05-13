@@ -99,8 +99,8 @@ export default function Home() {
       >
         <Image 
           src="/Images/worketyamo.svg" 
-          alt="Worketyamo logo" 
-          width={200} 
+          alt="Worketyamo" 
+          width={200}
           height={40} 
           className="w-32 sm:w-40 sm:h-40 md:w-48 md:mx-auto"
           priority
