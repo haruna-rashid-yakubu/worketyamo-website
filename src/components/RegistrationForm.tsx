@@ -1,8 +1,16 @@
 "use client";
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xrkencvqdzyjmclrjxkz.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhya2VuY3ZxZHp5am1jbHJqeGt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzc1MjMsImV4cCI6MjA1NzgxMzUyM30._eafo3raHfTF6l5CAXt3DbWRjT9FZZ8yfyGoimfeeZM';
+
+const getSupabaseClient = () => {
+  return createClient(supabaseUrl, supabaseAnonKey);
+};
 
 type RegistrationFormProps = {
   isOpen: boolean;
@@ -11,8 +19,8 @@ type RegistrationFormProps = {
   courseId: string;
 };
 
-const RegistrationForm: React.FC<RegistrationFormProps> = ({ 
-  isOpen, 
+const RegistrationForm: React.FC<RegistrationFormProps> = ({
+  isOpen,
   onClose,
   courseTitle,
   courseId
@@ -22,85 +30,117 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
     lastName: '',
     email: '',
     phone: '',
-    courseId: courseId,
-    courseTitle: courseTitle
+    courseId,
+    courseTitle
   });
-  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      courseId,
+      courseTitle
+    }));
+  }, [courseId, courseTitle]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Here you would typically send the data to your API
-    // For now, we'll just simulate a submission with a timeout
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmissionError(null);
+
+    try {
+      const supabase = getSupabaseClient();
+      
+      const { error } = await supabase
+        .from('registrations')
+        .insert([{
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          course_id: formData.courseId,
+          course_title: formData.courseTitle
+        }]);
+
+      if (error) {
+        console.error('Registration error:', error.message);
+        setSubmissionError(error.message);
+        setIsSubmitting(false);
+        return;
+      }
+
       setFormSubmitted(true);
       
-      // Reset form after 3 seconds of showing success message
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        courseId,
+        courseTitle
+      });
+      
       setTimeout(() => {
         onClose();
         setFormSubmitted(false);
       }, 3000);
-    }, 1500);
-  };
-
-  // Close modal when clicking outside
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === overlayRef.current) {
-      onClose();
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      setSubmissionError('Une erreur inattendue est survenue. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === overlayRef.current) onClose();
+  };
+
+  useEffect(() => {
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscKey);
+    
+    return () => {
+      window.removeEventListener('keydown', handleEscKey);
+    };
+  }, [isOpen, onClose]);
 
   const modalVariants = {
-    hidden: { 
-      opacity: 0,
-      scale: 0.8,
-      filter: "blur(12px)"
-    },
-    visible: { 
-      opacity: 1,
-      scale: 1,
-      filter: "blur(0px)",
-      transition: {
-        type: "spring",
-        damping: 25,
-        stiffness: 300
-      }
-    },
-    exit: { 
-      opacity: 0,
-      scale: 0.8,
-      filter: "blur(12px)",
-      transition: { 
-        duration: 0.3,
-        ease: "easeInOut"
-      }
-    }
+    hidden: { opacity: 0, scale: 0.8, filter: 'blur(12px)' },
+    visible: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { type: 'spring', damping: 25, stiffness: 300 } },
+    exit: { opacity: 0, scale: 0.8, filter: 'blur(12px)', transition: { duration: 0.3, ease: 'easeInOut' } }
   };
 
   const overlayVariants = {
     hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { duration: 0.3 }
-    },
-    exit: { 
-      opacity: 0,
-      transition: { duration: 0.3 }
-    }
+    visible: { opacity: 1, transition: { duration: 0.3 } },
+    exit: { opacity: 0, transition: { duration: 0.3 } }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   return (
     <AnimatePresence>
@@ -207,6 +247,12 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
                     placeholder="+237 6 99 00 00 00"
                   />
                 </div>
+                
+                {submissionError && (
+                  <div className="text-red-400 text-sm py-2 px-3 bg-red-900/30 border border-red-800 rounded">
+                    {submissionError}
+                  </div>
+                )}
                 
                 <div className="pt-2">
                   <button
