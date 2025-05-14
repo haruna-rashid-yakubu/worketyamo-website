@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
+    "@vercel/speed-insights": "^1.2.0",
     "cmdk": "^1.1.1",
     "framer-motion": "^12.9.7",
     "lucide-react": "^0.509.0",
