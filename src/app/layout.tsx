@@ -53,7 +53,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Microsoft Clarity tracking code */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-YJ9DNFNHGH"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-YJ9DNFNHGH');
+          `}
+        </Script>
+
         <Script id="microsoft-clarity" strategy="afterInteractive">
           {`
             (function(c,l,a,r,i,t,y){
