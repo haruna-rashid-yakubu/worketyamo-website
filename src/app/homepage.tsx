@@ -1,12 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import CourseSearch from "../components/CourseSearch";
-import AwspartnerLogo from "../../public/Images/aws-partner.png"
-import Udemylogo from "../../public/Images/udemy.png"
+import CourseSearch from "../../components/CourseSearch";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
+import AwspartnerLogo from "../../../public/Images/aws-partner.png"
+import Udemylogo from "../../../public/Images/udemy.png"
 import { motion } from "framer-motion";
+import { useTranslations } from 'next-intl';
 
 export default function Home() {
+  const t = useTranslations('homepage');
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -108,6 +111,15 @@ export default function Home() {
             priority
           />
         </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 1.0 }}
+          className="self-end md:self-center"
+        >
+          <LanguageSwitcher />
+        </motion.div>
       </div>
       
       <main className="flex flex-col gap-6 sm:gap-8 md:items-center text-left md:text-center w-full max-w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto">
@@ -121,14 +133,14 @@ export default function Home() {
             className="text-5xl text-left md:text-6xl lg:text-7xl font-heading md:text-center bg-gradient-to-r from-gray-600 via-gray-50 to-white bg-clip-text text-transparent"
             variants={itemVariants}
           >
-            Accélérateur de talents tech
+            {t('hero.title')}
           </motion.h1>
           
           <motion.p 
             className="text-base sm:text-lg font-body text-left md:text-center text-[#C3C3C3] mt-2 sm:mt-3"
             variants={itemVariants}
           >
-            Bootcamps intensifs et expérience de projet réel vous permettant de lancer une carrière technologique à fort impact.
+            {t('hero.subtitle')}
           </motion.p>
           
           <motion.div 
@@ -139,7 +151,7 @@ export default function Home() {
               className="text-xl md:text-2xl font-heading text-left md:text-center text-white"
               variants={itemVariants}
             >
-              Nos partenaires
+              {t('hero.partners')}
             </motion.h3>
             
             <motion.div 

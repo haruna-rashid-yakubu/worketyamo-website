@@ -6,16 +6,23 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@microsoft/clarity": "^1.0.0",
-    "@supabase/supabase-js": "^2.49.4",
+    "@prisma/client": "^6.13.0",
     "@vercel/speed-insights": "^1.2.0",
     "cmdk": "^1.1.1",
     "framer-motion": "^12.9.7",
     "lucide-react": "^0.509.0",
     "next": "15.3.2",
+    "prisma": "^6.13.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -25,7 +32,9 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
+    "eslint-config-next": "^15.4.5",
     "tailwindcss": "^4.1.6",
+    "tsx": "^4.20.3",
     "typescript": "^5"
   }
 }

@@ -1,16 +1,35 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { courses, Course } from '../data/courses';
 import { Command } from 'cmdk';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
+import { CourseWithTranslations } from '../lib/courses';
+import { getCoursesAction } from '../app/actions';
 
 export default function CourseSearch() {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [courses, setCourses] = useState<CourseWithTranslations[]>([]);
+  
+  useEffect(() => {
+    const loadCourses = async () => {
+      setLoading(true);
+      try {
+        const coursesData = await getCoursesAction();
+        setCourses(coursesData);
+      } catch (error) {
+        console.error('Error loading courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadCourses();
+  }, []);
   
   const filteredCourses = searchQuery 
     ? courses.filter(course => 
@@ -49,7 +68,7 @@ export default function CourseSearch() {
     return () => document.removeEventListener('keydown', handleKeydown);
   }, [setOpen]);
 
-  const handleCourseClick = (course: Course) => {
+  const handleCourseClick = (course: CourseWithTranslations) => {
     // Close search dialog
     setOpen(false);
     // Navigation will be handled by Next.js Link component
@@ -70,7 +89,7 @@ export default function CourseSearch() {
             onClick={() => setOpen(true)}
             className="w-full px-4 py-3 bg-[#333333] text-white rounded-md focus:outline-none cursor-pointer font-body flex items-center"
           >
-            <span className="flex-1 text-left">Recherche de cours...</span>
+            <span className="flex-1 text-left">Rechercher une formation...</span>
             <span className="text-gray-400">⌘K</span>
           </button>
         </motion.div>
@@ -100,9 +119,11 @@ export default function CourseSearch() {
                 {/* Icon placeholder - you'll insert your own logos here */}
                 <div className="w-6 h-6 flex-shrink-0 bg-transparent flex items-center justify-center rounded-sm overflow-hidden">
                   {course.iconUrl ? (
-                    <img 
+                    <Image 
                       src={course.iconUrl} 
                       alt={`${course.label} icon`} 
+                      width={24}
+                      height={24}
                       className="w-full h-full object-contain"
                     />
                   ) : (
@@ -157,7 +178,7 @@ export default function CourseSearch() {
                 >
                   <div className="p-4 flex items-center justify-between relative h-16">
                     <Command.Input 
-                      placeholder="Search course"
+                      placeholder="Rechercher une formation..."
                       className="w-full pl-2 pr-10 py-2 bg-transparent text-white border-none focus:outline-none font-body text-lg"
                       autoFocus
                     />
@@ -174,7 +195,7 @@ export default function CourseSearch() {
                     {loading && <Command.Loading>Loading courses...</Command.Loading>}
 
                     <Command.Empty className="p-6 text-center text-gray-400 font-body">
-                      No courses found for "{searchQuery}"
+                      Aucune formation trouvée
                     </Command.Empty>
                     
                     <div className="pl-4 pr-0 py-2 text-sm text-gray-400 font-body text-left">
@@ -205,9 +226,11 @@ export default function CourseSearch() {
                             <div className="text-white font-heading text-sm md:text-lg">{course.label}</div>
                             <div className="flex items-center justify-center w-8 h-8 rounded overflow-hidden">
                               {course.iconUrl ? (
-                                <img 
+                                <Image 
                                   src={course.iconUrl} 
                                   alt={`${course.label} icon`} 
+                                  width={32}
+                                  height={32}
                                   className="w-full h-full object-contain"
                                 />
                               ) : (

@@ -2,15 +2,8 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xrkencvqdzyjmclrjxkz.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhya2VuY3ZxZHp5am1jbHJqeGt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzc1MjMsImV4cCI6MjA1NzgxMzUyM30._eafo3raHfTF6l5CAXt3DbWRjT9FZZ8yfyGoimfeeZM';
-
-const getSupabaseClient = () => {
-  return createClient(supabaseUrl, supabaseAnonKey);
-};
+import { X, MessageCircle } from 'lucide-react';
+import { createRegistrationAction } from '@/app/actions';
 
 type RegistrationFormProps = {
   isOpen: boolean;
@@ -30,6 +23,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
     lastName: '',
     email: '',
     phone: '',
+    whatsapp: '',
     courseId,
     courseTitle
   });
@@ -57,22 +51,18 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
     setSubmissionError(null);
 
     try {
-      const supabase = getSupabaseClient();
-      
-      const { error } = await supabase
-        .from('registrations')
-        .insert([{
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          course_id: formData.courseId,
-          course_title: formData.courseTitle
-        }]);
+      const result = await createRegistrationAction({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        whatsapp: formData.whatsapp,
+        courseId: formData.courseId,
+        courseTitle: formData.courseTitle
+      });
 
-      if (error) {
-        console.error('Registration error:', error.message);
-        setSubmissionError(error.message);
+      if (!result.success) {
+        setSubmissionError(result.error || 'Une erreur est survenue');
         setIsSubmitting(false);
         return;
       }
@@ -84,6 +74,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
         lastName: '',
         email: '',
         phone: '',
+        whatsapp: '',
         courseId,
         courseTitle
       });
@@ -155,7 +146,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
           exit="exit"
         >
           <motion.div 
-            className="relative bg-[#21262D] border border-white/10 rounded-lg shadow-xl w-full max-w-md p-6 text-white"
+            className="relative bg-[#21262D] border border-white/10 rounded-lg shadow-xl w-full max-w-lg p-6 text-white"
             variants={modalVariants}
             initial="hidden"
             animate="visible"
@@ -248,6 +239,22 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
                   />
                 </div>
                 
+                <div>
+                  <label htmlFor="whatsapp" className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-1">
+                    <MessageCircle size={16} className="text-green-500" />
+                    WhatsApp (optionnel)
+                  </label>
+                  <input
+                    type="tel"
+                    id="whatsapp"
+                    name="whatsapp"
+                    value={formData.whatsapp}
+                    onChange={handleChange}
+                    className="w-full bg-[#2D333B] border border-gray-700 rounded-md py-2 px-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                    placeholder="+237 6 99 00 00 00"
+                  />
+                </div>
+                
                 {submissionError && (
                   <div className="text-red-400 text-sm py-2 px-3 bg-red-900/30 border border-red-800 rounded">
                     {submissionError}
@@ -275,7 +282,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
                 </div>
                 
                 <p className="text-xs text-center text-gray-400 mt-4">
-                  En vous inscrivant, vous acceptez notre politique de confidentialité et nos conditions d'utilisation.
+                  En vous inscrivant, vous acceptez notre politique de confidentialité et nos conditions d&apos;utilisation.
                 </p>
               </form>
             ) : (

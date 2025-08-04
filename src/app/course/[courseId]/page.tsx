@@ -4,12 +4,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import { Quote, Star } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { courses } from '@/data/courses';
-import { getCourseDetailById } from '@/data/detail';
 import Link from 'next/link';
 import Image from 'next/image';
 import RegistrationForm from '@/components/RegistrationForm';
 import { ArrowLeft, Images, Linkedin, Languages } from 'lucide-react';
+import { CourseDetailWithTranslations } from '@/lib/courses';
+import { getCourseDetailAction } from '@/app/actions';
+import { AvatarFallback } from '@/components/ui/avatar-fallback';
 import backsquare from '../../../../public/Images/icons/back-square.svg'
 
 // Ensure we're exporting a proper React component
@@ -183,11 +184,27 @@ export default function CoursePage() {
   const params = useParams();
   const courseId = params.courseId as string;
   
-  const courseDetail = getCourseDetailById(courseId);
-  const course = courses.find(c => c.id === courseId);
+  const [courseDetail, setCourseDetail] = useState<CourseDetailWithTranslations | null>(null);
+  const [loading, setLoading] = useState(true);
   
   // State to track scroll position
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  useEffect(() => {
+    const loadCourseDetail = async () => {
+      setLoading(true);
+      try {
+        const detail = await getCourseDetailAction(courseId);
+        setCourseDetail(detail);
+      } catch (error) {
+        console.error('Error loading course detail:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadCourseDetail();
+  }, [courseId]);
   
   // State for registration form overlay
   const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
@@ -221,17 +238,29 @@ export default function CoursePage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  if (!courseDetail || !course) {
+  if (loading) {
     return (
       <div 
         className="bg-[url('/Images/background-place.jpg')] bg-cover bg-center bg-no-repeat bg-fixed min-h-screen flex flex-col items-center justify-center p-4" 
       >
         <div className="bg-[#21262D] backdrop-blur-md p-8 rounded-lg max-w-lg text-center">
-          <h1 className="text-2xl font-heading text-white mb-4">Cours introuvable</h1>
-          <p className="text-gray-300 mb-6 font-body">Le cours que vous recherchez n'existe pas ou a été supprimé.</p>
+          <div className="text-white">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!courseDetail) {
+    return (
+      <div 
+        className="bg-[url('/Images/background-place.jpg')] bg-cover bg-center bg-no-repeat bg-fixed min-h-screen flex flex-col items-center justify-center p-4" 
+      >
+        <div className="bg-[#21262D] backdrop-blur-md p-8 rounded-lg max-w-lg text-center">
+          <h1 className="text-2xl font-heading text-white mb-4">Course not found</h1>
+          <p className="text-gray-300 mb-6 font-body">The course you&apos;re looking for doesn&apos;t exist or has been removed.</p>
           <Link href="/" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-heading inline-flex items-center">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour à l'accueil
+            Back to home
           </Link>
         </div>
       </div>
@@ -257,7 +286,7 @@ export default function CoursePage() {
             className="inline-flex items-center text-gray-300 hover:text-white mb-8 transition-colors bg-[#2D2A2A] px-2 py-2 rounded-md"
           >
             <Image alt="Back square" src={backsquare} width={24} height={24} className="mr-2 h-5 w-5" />
-            <span className="font-body">Retour</span>
+            <span className="font-body">Back</span>
           </Link>
           <Image 
                    src="/Images/worketyamo.svg" 
@@ -274,15 +303,12 @@ export default function CoursePage() {
           <header className="mb-12">
             <div className="flex flex-col items-start gap-8 max-w-full md:max-w-2xl">
               <div className="w-24 h-24">
-                {course.iconUrl && (
-                  <Image 
-                    src={course.iconUrl} 
-                    alt={course.label} 
-                    width={96} 
-                    height={96} 
-                    className="w-full h-full object-contain"
-                    priority
-                  />
+                {courseDetail.id && (
+                  <div className="w-full h-full bg-gray-700 rounded-lg flex items-center justify-center">
+                    <span className="text-2xl font-bold text-white">
+                      {courseDetail.fullTitle.charAt(0)}
+                    </span>
+                  </div>
                 )}
               </div>
               <div>
@@ -294,9 +320,9 @@ export default function CoursePage() {
                     className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors font-heading"
                     onClick={() => setIsRegistrationFormOpen(true)}
                   >
-                    S'inscrire
+                    Register
                   </button>
-                  <p className="text-sm text-[#E9E9E9] mt-2 font-body">{courseDetail.enrollmentCount?.toLocaleString()} déjà inscrits</p>
+                  <p className="text-sm text-[#E9E9E9] mt-2 font-body">{courseDetail.enrollmentCount?.toLocaleString()} enrolled</p>
                 </div>
               </div>
             </div>
@@ -420,19 +446,14 @@ export default function CoursePage() {
               <div className="flex flex-col gap-6">
                 {courseDetail.instructors.map((instructor: any, index: number) => (
                   <div key={index} className="flex items-start gap-4 bg-[#21262D]/90 backdrop-blur-md p-5 rounded-lg border border-white/5 hover:border-white/10 hover:shadow-md transition-all duration-300">
-                    {instructor.imageUrl ? (
-                      <Image 
-                        src={instructor.imageUrl} 
-                        alt={instructor.name} 
-                        width={64} 
-                        height={64} 
-                        className="rounded-full w-16 h-16 object-cover"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center text-xl">
-                        {instructor.name.charAt(0)}
-                      </div>
-                    )}
+                    <AvatarFallback
+                      src={instructor.imageUrl}
+                      alt={instructor.name}
+                      name={instructor.name}
+                      width={64}
+                      height={64}
+                      className="rounded-full"
+                    />
                     <div>
                       <h3 className="font-heading text-lg">{instructor.name}</h3>
                       <p className="text-gray-300 text-sm mb-2 font-body">{instructor.title}</p>
@@ -579,19 +600,14 @@ export default function CoursePage() {
                       }}
                     >
                     <div className="flex items-center mb-3">
-                      {testimonial.imageUrl ? (
-                        <Image 
-                          src={testimonial.imageUrl} 
-                          alt={testimonial.name} 
-                          width={40} 
-                          height={40} 
-                          className="rounded-full w-10 h-10 object-cover mr-3"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-sm mr-3">
-                          {testimonial.name.charAt(0)}
-                        </div>
-                      )}
+                      <AvatarFallback
+                        src={testimonial.imageUrl}
+                        alt={testimonial.name}
+                        name={testimonial.name}
+                        width={40}
+                        height={40}
+                        className="rounded-full mr-3"
+                      />
                       <div>
                         <div className="font-heading text-sm">{testimonial.name}</div>
                         {testimonial.role && <div className="text-gray-400 text-xs font-body">{testimonial.role}</div>}
@@ -611,12 +627,14 @@ export default function CoursePage() {
       </div>
 
       {/* Registration Form Overlay */}
-      <RegistrationForm 
-        isOpen={isRegistrationFormOpen}
-        onClose={() => setIsRegistrationFormOpen(false)}
-        courseTitle={courseDetail.fullTitle}
-        courseId={courseId}
-      />
+      {courseDetail && (
+        <RegistrationForm 
+          isOpen={isRegistrationFormOpen}
+          onClose={() => setIsRegistrationFormOpen(false)}
+          courseTitle={courseDetail.fullTitle}
+          courseId={courseId}
+        />
+      )}
     </div>
   );
 }

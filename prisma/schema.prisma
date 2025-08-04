@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Course {
+  id              String  @id
+  label           String
+  description     String
+  backgroundColor String?
+  iconUrl         String?
+  
+  // Relations
+  details         CourseDetail?
+  
+  @@map("courses")
+}
+
+model CourseDetail {
+  id                      String  @id
+  fullTitle               String
+  subtitle                String
+  backgroundGradient      String?
+  enrollmentCount         Int?
+  rating                  Float?
+  reviewCount             Int?
+  level                   String?
+  experienceRequired      String?
+  schedule                String?
+  scheduleDuration        String?
+  scheduleFlexibility     String?
+  shareable               Boolean @default(false)
+  shareableText           String?
+  industryRecognized      Boolean @default(false)
+  industryRecognizedText  String?
+  
+  // Relations
+  course                  Course                    @relation(fields: [id], references: [id], onDelete: Cascade)
+  modules                 CourseModule[]
+  instructors             CourseInstructor[]
+  skills                  CourseSkill[]
+  testimonials            CourseTestimonial[]
+  
+  @@map("course_details")
+}
+
+model CourseModule {
+  id             String @id @default(cuid())
+  courseDetailId String
+  order          Int
+  title          String
+  description    String
+  detailedContent String?
+  topics         String? // Store as JSON string
+  
+  // Relations
+  courseDetail   CourseDetail @relation(fields: [courseDetailId], references: [id], onDelete: Cascade)
+  
+  @@map("course_modules")
+}
+
+model CourseInstructor {
+  id             String @id @default(cuid())
+  courseDetailId String
+  name           String
+  title          String
+  imageUrl       String?
+  courses        Int?
+  learners       Int?
+  
+  courseDetail   CourseDetail @relation(fields: [courseDetailId], references: [id], onDelete: Cascade)
+  
+  @@map("course_instructors")
+}
+
+model CourseSkill {
+  id             String @id @default(cuid())
+  courseDetailId String
+  name           String
+  iconUrl        String?
+  order          Int
+  
+  // Relations
+  courseDetail   CourseDetail @relation(fields: [courseDetailId], references: [id], onDelete: Cascade)
+  
+  @@map("course_skills")
+}
+
+model CourseTestimonial {
+  id             String @id @default(cuid())
+  courseDetailId String
+  name           String
+  role           String?
+  imageUrl       String?
+  text           String
+  stars          Int?
+  
+  courseDetail   CourseDetail @relation(fields: [courseDetailId], references: [id], onDelete: Cascade)
+  
+  @@map("course_testimonials")
+}
+
+model Registration {
+  id          String   @id @default(cuid())
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  email       String
+  phone       String
+  whatsapp    String?
+  courseId    String   @map("course_id")
+  courseTitle String   @map("course_title")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  @@map("registrations")
+}
+
