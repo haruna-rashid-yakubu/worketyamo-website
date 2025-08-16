@@ -303,8 +303,19 @@ export default function CoursePage() {
           <header className="mb-12">
             <div className="flex flex-col items-start gap-8 max-w-full md:max-w-2xl">
               <div className="w-24 h-24">
-                {courseDetail.id && (
-                  <div className="w-full h-full bg-gray-700 rounded-lg flex items-center justify-center">
+                {courseDetail.iconUrl ? (
+                  <Image
+                    src={courseDetail.iconUrl}
+                    alt={courseDetail.label}
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-contain rounded-lg"
+                  />
+                ) : (
+                  <div 
+                    className="w-full h-full rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: courseDetail.backgroundColor || '#333333' }}
+                  >
                     <span className="text-2xl font-bold text-white">
                       {courseDetail.fullTitle.charAt(0)}
                     </span>

@@ -107,14 +107,14 @@ export const courseDetails: Record<string, CourseDetail> = {
       {
         name: 'Mylian Ndongo',
         role: 'Apprenant depuis 2019',
-        imageUrl: '/Images/testimonials/mylian-ndongo.jpg',
+        imageUrl: undefined,
         text: 'Before Worketyamo, I had never built a full-stack application from scratch—now I’ve launched two production-ready projects and landed my dream role as a Software Engineer at a top tech firm. The intensive bootcamp curriculum, hands-on mentorship, and real-world project experience transformed my confidence and skills in just 12 weeks.',
         stars: 5
       },
       {
         name: 'Amélie Dubois',
         role: 'Apprenante depuis 2020',
-        imageUrl: '/Images/testimonials/amelie-dubois.jpg',
+        imageUrl: undefined,
         text: 'Before Worketyamo, I had never built a full-stack application from scratch—now I’ve launched two production-ready projects and landed my dream role as a Software Engineer at a top tech firm. The intensive bootcamp curriculum, hands-on mentorship, and real-world project experience transformed my confidence and skills in just 12 weeks.',
         stars: 5
       }
@@ -179,7 +179,7 @@ export const courseDetails: Record<string, CourseDetail> = {
       {
         name: 'Rachid Hourma',
         title: 'Architecte Solutions Cloud AWS',
-        imageUrl: '/Images/instructors/rachid-hourma.jpg',
+        imageUrl: undefined,
         courses: 9,
         learners: 66784
       }
@@ -200,14 +200,14 @@ export const courseDetails: Record<string, CourseDetail> = {
       {
         name: 'Mylian Ndongo',
         role: 'Apprenant depuis 2019',
-        imageUrl: '/Images/testimonials/mylian-ndongo.jpg',
+        imageUrl: undefined,
         text: 'Before Worketyamo, I had never built a full-stack application from scratch—now I’ve launched two production-ready projects and landed my dream role as a Software Engineer at a top tech firm. The intensive bootcamp curriculum, hands-on mentorship, and real-world project experience transformed my confidence and skills in just 12 weeks.',
         stars: 5
       },
       {
         name: 'Amélie Dubois',
         role: 'Apprenante depuis 2020',
-        imageUrl: '/Images/testimonials/amelie-dubois.jpg',
+        imageUrl: undefined,
         text: 'Before Worketyamo, I had never built a full-stack application from scratch—now I’ve launched two production-ready projects and landed my dream role as a Software Engineer at a top tech firm. The intensive bootcamp curriculum, hands-on mentorship, and real-world project experience transformed my confidence and skills in just 12 weeks.',
         stars: 5
       }
@@ -269,7 +269,7 @@ export const courseDetails: Record<string, CourseDetail> = {
       {
         name: 'Rachid Hourma',
         title: 'Formateur Docker',
-        imageUrl: '/Images/instructors/rachid-hourma.jpg',
+        imageUrl: undefined,
         courses: 5,
         learners: 12000
       }
@@ -289,14 +289,14 @@ export const courseDetails: Record<string, CourseDetail> = {
       {
         name: 'Jean Dupont',
         role: 'Apprenant depuis 2022',
-        imageUrl: '/Images/testimonials/jean-dupont.jpg',
+        imageUrl: undefined,
         text: 'Excellente formation, très pratique et bien structurée.',
         stars: 5
       },
       {
         name: 'Fatou N.',
         role: 'Apprenante depuis 2023',
-        imageUrl: '/Images/testimonials/fatou-n.jpg',
+        imageUrl: undefined,
         text: 'Le formateur était à l’écoute et les ateliers étaient très concrets.',
         stars: 5
       }
@@ -351,7 +351,7 @@ export const courseDetails: Record<string, CourseDetail> = {
       {
         name: 'Rachid Hourma',
         title: 'Formateur Terraform & Architecte DevOps',
-        imageUrl: '/Images/instructors/rachid-hourma.jpg',
+        imageUrl: undefined,
         courses: 7,
         learners: 45200
       }
@@ -373,14 +373,14 @@ export const courseDetails: Record<string, CourseDetail> = {
       {
         name: 'Lucas Martin',
         role: 'Apprenant depuis 2021',
-        imageUrl: '/Images/testimonials/lucas-martin.jpg',
+        imageUrl: undefined,
         text: 'Formation Terraform très complète, modules pratiques et exemples concrets.',
         stars: 5
       },
       {
         name: 'Sophie K.',
         role: 'Apprenante depuis 2022',
-        imageUrl: '/Images/testimonials/sophie-k.jpg',
+        imageUrl: undefined,
         text: 'J’ai automatisé mon infrastructure en un temps record grâce à ce bootcamp.',
         stars: 5
       }
@@ -435,7 +435,7 @@ export const courseDetails: Record<string, CourseDetail> = {
     {
       name: 'Rachid Hourma',
       title: 'Formateur IA & Automation',
-      imageUrl: '/Images/instructors/rachid-hourma.jpg',
+      imageUrl: undefined,
       courses: 4,
       learners: 32000
     }
@@ -457,14 +457,14 @@ export const courseDetails: Record<string, CourseDetail> = {
     {
       name: 'Alice T.',
       role: 'Apprenante depuis 2022',
-      imageUrl: '/Images/testimonials/alice-t.jpg',
+      imageUrl: undefined,
       text: 'Ce bootcamp m’a permis d’automatiser mes processus métiers en un temps record.',
       stars: 5
     },
     {
       name: 'Oumar B.',
       role: 'Apprenant depuis 2023',
-      imageUrl: '/Images/testimonials/oumar-b.jpg',
+      imageUrl: undefined,
       text: 'Les ateliers avec n8n et DeepSeek étaient extrêmement pratiques.',
       stars: 5
     }
@@ -525,7 +525,7 @@ export const courseDetails: Record<string, CourseDetail> = {
     {
       name: 'Rachid Hourma',
       title: 'Formateur Cybersécurité',
-      imageUrl: '/Images/instructors/rachid-hourma.jpg',
+      imageUrl: undefined,
       courses: 6,
       learners: 23000
     }
@@ -547,14 +547,14 @@ export const courseDetails: Record<string, CourseDetail> = {
     {
       name: 'Marie Laurent',
       role: 'Apprenante depuis 2021',
-      imageUrl: '/Images/testimonials/marie-laurent.jpg',
+      imageUrl: undefined,
       text: 'Ce bootcamp m’a donné toutes les clés pour pentester efficacement mes applications.',
       stars: 5
     },
     {
       name: 'Karim N.',
       role: 'Apprenant depuis 2022',
-      imageUrl: '/Images/testimonials/karim-n.jpg',
+      imageUrl: undefined,
       text: 'Les ateliers pratiques avec Burp Suite étaient extrêmement enrichissants.',
       stars: 5
     }
@@ -615,7 +615,7 @@ export const courseDetails: Record<string, CourseDetail> = {
     {
       name: 'Rachid Hourma',
       title: 'Formateur Python',
-      imageUrl: '/Images/instructors/rachid-hourma.jpg',
+      imageUrl: undefined,
       courses: 10,
       learners: 34000
     }
@@ -637,14 +637,14 @@ export const courseDetails: Record<string, CourseDetail> = {
     {
       name: 'Samantha K.',
       role: 'Apprenante depuis 2022',
-      imageUrl: '/Images/testimonials/samantha-k.jpg',
+      imageUrl: undefined,
       text: 'Le bootcamp Python était très complet et accessible.',
       stars: 5
     },
     {
       name: 'Mohamed A.',
       role: 'Apprenant depuis 2023',
-      imageUrl: '/Images/testimonials/mohamed-a.jpg',
+      imageUrl: undefined,
       text: 'J’ai pu automatiser des tâches quotidiennes grâce aux scripts appris.',
       stars: 5
     }
@@ -705,7 +705,7 @@ export const courseDetails: Record<string, CourseDetail> = {
     {
       name: 'Rachid Hourma',
       title: 'Formateur Git & GitHub',
-      imageUrl: '/Images/instructors/rachid-hourma.jpg',
+      imageUrl: undefined,
       courses: 8,
       learners: 29000
     }
@@ -726,14 +726,14 @@ export const courseDetails: Record<string, CourseDetail> = {
     {
       name: 'Élodie M.',
       role: 'Apprenante depuis 2022',
-      imageUrl: '/Images/testimonials/elodie-m.jpg',
+      imageUrl: undefined,
       text: 'Ce bootcamp m’a permis d’adopter les meilleures pratiques Git et d’automatiser mes workflows.',
       stars: 5
     },
     {
       name: 'Thomas L.',
       role: 'Apprenant depuis 2023',
-      imageUrl: '/Images/testimonials/thomas-l.jpg',
+      imageUrl: undefined,
       text: 'Les GitHub Actions sont devenus un jeu d’enfant grâce à ce bootcamp.',
       stars: 5
     }

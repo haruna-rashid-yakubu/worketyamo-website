@@ -10,6 +10,10 @@ export interface CourseWithTranslations {
 
 export interface CourseDetailWithTranslations {
   id: string;
+  label: string;
+  description: string;
+  backgroundColor?: string | null;
+  iconUrl?: string | null;
   backgroundGradient?: string | null;
   enrollmentCount?: number | null;
   rating?: number | null;
@@ -82,6 +86,7 @@ export async function getCourseDetailById(courseId: string): Promise<CourseDetai
   const courseDetail = await prisma.courseDetail.findUnique({
     where: { id: courseId },
     include: {
+      course: true, // Include the basic course information
       modules: {
         orderBy: { order: 'asc' },
       },
@@ -99,6 +104,10 @@ export async function getCourseDetailById(courseId: string): Promise<CourseDetai
 
   return {
     id: courseDetail.id,
+    label: courseDetail.course.label,
+    description: courseDetail.course.description,
+    backgroundColor: courseDetail.course.backgroundColor,
+    iconUrl: courseDetail.course.iconUrl,
     backgroundGradient: courseDetail.backgroundGradient,
     enrollmentCount: courseDetail.enrollmentCount,
     rating: courseDetail.rating,
