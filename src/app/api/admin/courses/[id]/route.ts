@@ -3,11 +3,12 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const course = await prisma.course.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         details: {
           include: {
@@ -43,29 +44,30 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const data = await request.json();
 
     // First, delete existing related data if updating details
     if (data.details) {
       await prisma.courseTestimonial.deleteMany({
-        where: { courseDetailId: params.id }
+        where: { courseDetailId: id }
       });
       await prisma.courseSkill.deleteMany({
-        where: { courseDetailId: params.id }
+        where: { courseDetailId: id }
       });
       await prisma.courseInstructor.deleteMany({
-        where: { courseDetailId: params.id }
+        where: { courseDetailId: id }
       });
       await prisma.courseModule.deleteMany({
-        where: { courseDetailId: params.id }
+        where: { courseDetailId: id }
       });
     }
 
     const course = await prisma.course.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         label: data.label,
         description: data.description,
@@ -74,7 +76,6 @@ export async function PUT(
         details: data.details ? {
           upsert: {
             create: {
-              id: params.id,
               fullTitle: data.details.fullTitle,
               subtitle: data.details.subtitle,
               backgroundGradient: data.details.backgroundGradient,
@@ -121,7 +122,7 @@ export async function PUT(
       if (data.details.modules) {
         await prisma.courseModule.createMany({
           data: data.details.modules.map((module: any, index: number) => ({
-            courseDetailId: params.id,
+            courseDetailId: id,
             order: index,
             title: module.title,
             description: module.description,
@@ -134,7 +135,7 @@ export async function PUT(
       if (data.details.instructors) {
         await prisma.courseInstructor.createMany({
           data: data.details.instructors.map((instructor: any) => ({
-            courseDetailId: params.id,
+            courseDetailId: id,
             name: instructor.name,
             title: instructor.title,
             imageUrl: instructor.imageUrl,
@@ -147,7 +148,7 @@ export async function PUT(
       if (data.details.skills) {
         await prisma.courseSkill.createMany({
           data: data.details.skills.map((skill: any, index: number) => ({
-            courseDetailId: params.id,
+            courseDetailId: id,
             order: index,
             name: skill.name,
             iconUrl: skill.iconUrl,
@@ -158,7 +159,7 @@ export async function PUT(
       if (data.details.testimonials) {
         await prisma.courseTestimonial.createMany({
           data: data.details.testimonials.map((testimonial: any) => ({
-            courseDetailId: params.id,
+            courseDetailId: id,
             name: testimonial.name,
             role: testimonial.role,
             imageUrl: testimonial.imageUrl,
@@ -171,7 +172,7 @@ export async function PUT(
 
     // Fetch updated course with all relations
     const updatedCourse = await prisma.course.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         details: {
           include: {
@@ -196,11 +197,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.course.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Cours supprimé avec succès' });

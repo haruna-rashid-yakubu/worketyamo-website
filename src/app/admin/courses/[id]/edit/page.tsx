@@ -6,7 +6,7 @@ import CourseForm from '@/components/admin/CourseForm';
 
 export default function EditCoursePage() {
   const params = useParams();
-  const [courseData, setCourseData] = useState(null);
+  const [courseData, setCourseData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

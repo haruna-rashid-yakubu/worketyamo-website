@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
         iconUrl: data.iconUrl,
         details: data.details ? {
           create: {
-            id: data.id,
             fullTitle: data.details.fullTitle,
             subtitle: data.details.subtitle,
             backgroundGradient: data.details.backgroundGradient,
