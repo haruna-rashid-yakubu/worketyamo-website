@@ -32,7 +32,7 @@ async function main() {
   for (const [courseId, detail] of Object.entries(courseDetails)) {
     await prisma.courseDetail.create({
       data: {
-        id: courseId,
+        id: detail.id,
         fullTitle: detail.fullTitle,
         subtitle: detail.subtitle,
         backgroundGradient: detail.backgroundGradient,
@@ -55,7 +55,7 @@ async function main() {
     for (const [moduleIndex, module] of detail.modules.entries()) {
       await prisma.courseModule.create({
         data: {
-          courseDetailId: courseId,
+          courseDetailId: detail.id,
           order: moduleIndex,
           title: module.title,
           description: module.description,
@@ -69,7 +69,7 @@ async function main() {
     if (detail.instructors) {
       await prisma.courseInstructor.createMany({
         data: detail.instructors.map(instructor => ({
-          courseDetailId: courseId,
+          courseDetailId: detail.id,
           name: instructor.name,
           title: instructor.title,
           imageUrl: instructor.imageUrl,
@@ -83,7 +83,7 @@ async function main() {
     for (const [skillIndex, skill] of detail.skills.entries()) {
       await prisma.courseSkill.create({
         data: {
-          courseDetailId: courseId,
+          courseDetailId: detail.id,
           order: skillIndex,
           name: skill.name,
           iconUrl: skill.iconUrl,
@@ -95,7 +95,7 @@ async function main() {
     if (detail.testimonials) {
       await prisma.courseTestimonial.createMany({
         data: detail.testimonials.map(testimonial => ({
-          courseDetailId: courseId,
+          courseDetailId: detail.id,
           name: testimonial.name,
           role: testimonial.role,
           imageUrl: testimonial.imageUrl,

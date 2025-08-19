@@ -387,7 +387,7 @@ export const courseDetails: Record<string, CourseDetail> = {
     ]
   }, 
  "ai" : {
-  id: 'ai-automation',
+  id: 'ai',
   fullTitle: 'Bootcamp AI Automation',
   subtitle: 'Automatisez vos workflows grâce à l’IA et aux API les plus puissantes avec notre formation 100 % pratique.',
   backgroundGradient: 'linear-gradient(180deg, #FF6F61 0%, #0D1117 80%)',
@@ -471,7 +471,7 @@ export const courseDetails: Record<string, CourseDetail> = {
   ]
 }, 
 'burp': {
-  id: 'burp-suite',
+  id: 'burp',
   fullTitle: 'Bootcamp Burp Suite',
   subtitle: 'Renforcez la sécurité de vos applications web et maîtrisez Burp Suite avec notre bootcamp 100 % pratique.',
   backgroundGradient: 'linear-gradient(180deg, #E53935 0%, #0D1117  80%)',
@@ -651,7 +651,7 @@ export const courseDetails: Record<string, CourseDetail> = {
   ]
 }, 
 'github': {
-  id: 'git-github',
+  id: 'github',
   fullTitle: 'Bootcamp Git & GitHub (+ GitHub Actions)',
   subtitle: 'Maîtrisez le versioning, collaborez efficacement et automatisez vos pipelines CI/CD avec Git & GitHub.',
   backgroundGradient: 'linear-gradient(180deg, #3A098B 0%, #0D1117 80%)',
