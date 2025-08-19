@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { fallbackCourses } from './fallback-courses';
 
 export interface CourseWithTranslations {
   id: string;
@@ -71,38 +72,50 @@ export interface CourseTestimonialData {
 }
 
 export async function getCourses(): Promise<CourseWithTranslations[]> {
-  const courses = await prisma.course.findMany();
+  try {
+    // Check if DATABASE_URL is available
+    if (!process.env.DATABASE_URL) {
+      console.warn('DATABASE_URL not found, using fallback courses');
+      return fallbackCourses;
+    }
 
-  return courses.map(course => ({
-    id: course.id,
-    backgroundColor: course.backgroundColor,
-    iconUrl: course.iconUrl,
-    label: course.label,
-    description: course.description,
-  }));
+    const courses = await prisma.course.findMany();
+
+    return courses.map(course => ({
+      id: course.id,
+      backgroundColor: course.backgroundColor,
+      iconUrl: course.iconUrl,
+      label: course.label,
+      description: course.description,
+    }));
+  } catch (error) {
+    console.error('Error fetching courses, using fallback data:', error);
+    return fallbackCourses;
+  }
 }
 
 export async function getCourseDetailById(courseId: string): Promise<CourseDetailWithTranslations | null> {
-  const courseDetail = await prisma.courseDetail.findUnique({
-    where: { id: courseId },
-    include: {
-      course: true, // Include the basic course information
-      modules: {
-        orderBy: { order: 'asc' },
+  try {
+    const courseDetail = await prisma.courseDetail.findUnique({
+      where: { id: courseId },
+      include: {
+        course: true, // Include the basic course information
+        modules: {
+          orderBy: { order: 'asc' },
+        },
+        instructors: true,
+        skills: {
+          orderBy: { order: 'asc' },
+        },
+        testimonials: true,
       },
-      instructors: true,
-      skills: {
-        orderBy: { order: 'asc' },
-      },
-      testimonials: true,
-    },
-  });
+    });
 
-  if (!courseDetail) {
-    return null;
-  }
+    if (!courseDetail) {
+      return null;
+    }
 
-  return {
+    return {
     id: courseDetail.id,
     label: courseDetail.course.label,
     description: courseDetail.course.description,
@@ -138,7 +151,11 @@ export async function getCourseDetailById(courseId: string): Promise<CourseDetai
       iconUrl: skill.iconUrl,
       name: skill.name,
     })),
-    testimonials: courseDetail.testimonials,
-    languages: ['Français'], // Static for now
-  };
+      testimonials: courseDetail.testimonials,
+      languages: ['Français'], // Static for now
+    };
+  } catch (error) {
+    console.error('Error fetching course detail:', error);
+    throw new Error(`Failed to fetch course detail for ID: ${courseId}`);
+  }
 }
