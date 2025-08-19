@@ -4,11 +4,28 @@ import { getCourses, getCourseDetailById } from '@/lib/courses';
 import { prisma } from '@/lib/prisma';
 
 export async function getCoursesAction() {
-  return await getCourses();
+  try {
+    console.log('getCoursesAction: Starting to fetch courses');
+    const courses = await getCourses();
+    console.log('getCoursesAction: Successfully fetched', courses.length, 'courses');
+    return courses;
+  } catch (error) {
+    console.error('getCoursesAction: Error fetching courses:', error);
+    // Return empty array instead of throwing to prevent 500 error
+    return [];
+  }
 }
 
 export async function getCourseDetailAction(courseId: string) {
-  return await getCourseDetailById(courseId);
+  try {
+    console.log('getCourseDetailAction: Fetching course detail for ID:', courseId);
+    const courseDetail = await getCourseDetailById(courseId);
+    console.log('getCourseDetailAction: Successfully fetched course detail:', courseDetail?.id);
+    return courseDetail;
+  } catch (error) {
+    console.error('getCourseDetailAction: Error fetching course detail:', error);
+    return null;
+  }
 }
 
 export async function createRegistrationAction(data: {

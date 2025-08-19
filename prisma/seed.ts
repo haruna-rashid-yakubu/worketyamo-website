@@ -1,4 +1,4 @@
-import { PrismaClient } from '../src/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { courses } from '../src/data/courses';
 import { courseDetails } from '../src/data/detail';
 
