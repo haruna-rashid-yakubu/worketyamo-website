@@ -11,6 +11,7 @@ import { ArrowLeft, Images, Linkedin, Languages } from 'lucide-react';
 import { CourseDetailWithTranslations } from '@/lib/courses';
 import { getCourseDetailAction } from '@/app/actions';
 import { AvatarFallback } from '@/components/ui/avatar-fallback';
+import AdvancedCourseAIAssistant from '@/components/AdvancedCourseAIAssistant';
 import backsquare from '../../../../public/Images/icons/back-square.svg'
 
 // Ensure we're exporting a proper React component
@@ -645,6 +646,11 @@ export default function CoursePage() {
           courseTitle={courseDetail.fullTitle}
           courseId={courseId}
         />
+      )}
+
+      {/* Advanced AI Assistant - Sticky floating button */}
+      {courseDetail && (
+        <AdvancedCourseAIAssistant courseDetail={courseDetail} />
       )}
     </div>
   );
