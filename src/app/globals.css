@@ -41,11 +41,10 @@
   --font-heading: 'ArticulatCF-Medium', Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #212223;
-    --foreground: #ededed;
-  }
+/* Dark mode permanently enabled */
+:root {
+  --background: #212223 !important;
+  --foreground: #ededed !important;
 }
 
 body {
