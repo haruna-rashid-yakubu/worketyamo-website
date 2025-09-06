@@ -295,7 +295,7 @@ Posez-moi vos questions sur cette formation !`,
       };
       setMessages([welcomeMessage]);
     }
-  }, [courseDetail.label, messages.length]);
+  }, [courseDetail.label, courseDetail.fullTitle, messages.length]);
 
   // Initialize conversation ID and session persistence
   useEffect(() => {

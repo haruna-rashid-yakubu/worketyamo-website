@@ -113,9 +113,6 @@ const nextConfig: NextConfig = {
   // Enable compression
   compress: true,
 
-  // Enable SWC minification
-  swcMinify: true,
-
   // Remove X-Powered-By header
   poweredByHeader: false,
 };

@@ -43,7 +43,7 @@ export default function CourseNotFound() {
               Formation non trouvée
             </h2>
             <p className="text-gray-300 font-body text-lg mb-8 max-w-lg mx-auto">
-              Cette formation n'existe pas ou a été supprimée. 
+              Cette formation n&apos;existe pas ou a été supprimée. 
               Découvrez nos autres formations disponibles ci-dessous.
             </p>
           </div>

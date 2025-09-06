@@ -21,7 +21,7 @@ export default function NotFound() {
           </h2>
           <p className="text-gray-300 font-body mb-8">
             Désolé, nous ne trouvons pas la page que vous recherchez. 
-            Elle a peut-être été déplacée ou n'existe plus.
+            Elle a peut-être été déplacée ou n&apos;existe plus.
           </p>
         </div>
         
@@ -30,7 +30,7 @@ export default function NotFound() {
             href="/"
             className="inline-flex items-center px-6 py-3 bg-orange-500 text-white font-heading rounded-lg hover:bg-orange-600 transition-colors"
           >
-            Retour à l'accueil
+            Retour à l&apos;accueil
           </Link>
           
           <div className="text-gray-400 text-sm">

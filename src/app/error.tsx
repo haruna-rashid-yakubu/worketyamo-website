@@ -24,7 +24,7 @@ export default function Error({
             Erreur du serveur
           </h2>
           <p className="text-gray-300 font-body mb-8">
-            Une erreur inattendue s'est produite. Notre équipe technique a été notifiée 
+            Une erreur inattendue s&apos;est produite. Notre équipe technique a été notifiée 
             et travaille à résoudre le problème.
           </p>
         </div>
@@ -41,14 +41,14 @@ export default function Error({
             href="/"
             className="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-heading rounded-lg hover:bg-gray-700 transition-colors"
           >
-            Retour à l'accueil
+            Retour à l&apos;accueil
           </Link>
         </div>
         
         {process.env.NODE_ENV === 'development' && (
           <details className="mt-8 p-4 bg-gray-800 rounded-lg text-left">
             <summary className="cursor-pointer text-orange-400 font-heading">
-              Détails de l'erreur (dev only)
+              Détails de l&apos;erreur (dev only)
             </summary>
             <pre className="mt-2 text-xs text-gray-300 whitespace-pre-wrap overflow-auto">
               {error.message}
