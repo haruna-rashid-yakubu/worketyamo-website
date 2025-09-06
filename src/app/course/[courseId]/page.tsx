@@ -12,9 +12,9 @@ import { CourseDetailWithTranslations } from '@/lib/courses';
 import { getCourseDetailAction } from '@/app/actions';
 import { AvatarFallback } from '@/components/ui/avatar-fallback';
 import AdvancedCourseAIAssistant from '@/components/AdvancedCourseAIAssistant';
+import { useQuery } from '@tanstack/react-query';
+import { notFound } from 'next/navigation';
 import backsquare from '../../../../public/Images/icons/back-square.svg'
-
-// Ensure we're exporting a proper React component
 
 // Quote Icon with Top and Bottom Border Animation
 const AnimatedQuoteWithBorders = () => {
@@ -185,27 +185,55 @@ export default function CoursePage() {
   const params = useParams();
   const courseId = params.courseId as string;
   
-  const [courseDetail, setCourseDetail] = useState<CourseDetailWithTranslations | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Use React Query for data fetching and caching
+  const { data: courseDetail, isLoading: loading, error } = useQuery({
+    queryKey: ['courseDetail', courseId],
+    queryFn: async () => {
+      try {
+        const result = await getCourseDetailAction(courseId);
+        if (!result) {
+          throw new Error('Course not found');
+        }
+        return result;
+      } catch (err) {
+        throw err;
+      }
+    },
+    staleTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 30, // 30 minutes
+    retry: (failureCount, error) => {
+      // Don't retry if it's a 404 error
+      if (error?.message === 'Course not found') {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+
+  // Handle 404 for non-existent courses
+  if (error?.message === 'Course not found') {
+    notFound();
+  }
+
+  // Preload critical images when course data is available
+  useEffect(() => {
+    if (courseDetail?.iconUrl) {
+      const img = new window.Image();
+      img.src = courseDetail.iconUrl;
+    }
+    
+    if (courseDetail?.instructors) {
+      courseDetail.instructors.forEach(instructor => {
+        if (instructor.imageUrl) {
+          const img = new window.Image();
+          img.src = instructor.imageUrl;
+        }
+      });
+    }
+  }, [courseDetail]);
   
   // State to track scroll position
   const [isScrolled, setIsScrolled] = useState(false);
-  
-  useEffect(() => {
-    const loadCourseDetail = async () => {
-      setLoading(true);
-      try {
-        const detail = await getCourseDetailAction(courseId);
-        setCourseDetail(detail);
-      } catch (error) {
-        console.error('Error loading course detail:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadCourseDetail();
-  }, [courseId]);
   
   // State for registration form overlay
   const [isRegistrationFormOpen, setIsRegistrationFormOpen] = useState(false);
@@ -245,7 +273,42 @@ export default function CoursePage() {
         className="bg-[url('/Images/background-place.jpg')] bg-cover bg-center bg-no-repeat bg-fixed min-h-screen flex flex-col items-center justify-center p-4" 
       >
         <div className="bg-[#21262D] backdrop-blur-md p-8 rounded-lg max-w-lg text-center">
-          <div className="text-white">Loading...</div>
+          {/* Loading Spinner */}
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative">
+              {/* Outer ring */}
+              <motion.div
+                className="w-16 h-16 border-4 border-gray-700 border-t-orange-500 rounded-full"
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              />
+              {/* Inner ring */}
+              <motion.div
+                className="absolute top-2 left-2 w-12 h-12 border-2 border-gray-600 border-b-blue-500 rounded-full"
+                animate={{ rotate: -360 }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              />
+            </div>
+            <motion.div 
+              className="text-white font-body"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              Loading course...
+            </motion.div>
+          </div>
         </div>
       </div>
     );
@@ -268,8 +331,189 @@ export default function CoursePage() {
     );
   }
 
+  // Generate comprehensive structured data for SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": courseDetail.fullTitle,
+    "description": courseDetail.subtitle || courseDetail.description,
+    "provider": {
+      "@type": "Organization",
+      "name": "Worketyamo",
+      "url": "https://worketyamo.com",
+      "logo": "https://worketyamo.com/Images/worketyamo.svg",
+      "sameAs": [
+        "https://www.linkedin.com/company/worketyamo",
+        "https://twitter.com/worketyamo"
+      ]
+    },
+    "courseMode": ["online", "blended"],
+    "educationalLevel": courseDetail.level || "Beginner to Advanced",
+    "timeRequired": courseDetail.scheduleDuration,
+    "numberOfCredits": courseDetail.modules?.length,
+    "coursePrerequisites": courseDetail.experienceRequired,
+    "inLanguage": courseDetail.languages || ["fr", "en"],
+    "isAccessibleForFree": false,
+    "offers": {
+      "@type": "Offer",
+      "category": "EducationalOccupationalCredential",
+      "priceCurrency": "EUR",
+      "availability": "https://schema.org/InStock",
+      "validFrom": new Date().toISOString(),
+      "seller": {
+        "@type": "Organization",
+        "name": "Worketyamo"
+      }
+    },
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": "online",
+      "courseWorkload": courseDetail.scheduleDuration,
+      "courseSchedule": {
+        "@type": "Schedule",
+        "scheduleTimezone": "Europe/Paris"
+      }
+    },
+    "teaches": courseDetail.skills?.map(skill => skill.name),
+    "occupationalCredentialAwarded": {
+      "@type": "EducationalOccupationalCredential",
+      "credentialCategory": "certificate",
+      "recognizedBy": {
+        "@type": "Organization", 
+        "name": "Worketyamo"
+      }
+    },
+    "syllabusSections": courseDetail.modules?.map((module, index) => ({
+      "@type": "Syllabus",
+      "name": module.title,
+      "description": module.description,
+      "position": index + 1,
+      "timeRequired": "Variable",
+      "about": module.topics?.map(topic => ({
+        "@type": "Thing",
+        "name": topic
+      }))
+    })),
+    "instructor": courseDetail.instructors?.map(instructor => ({
+      "@type": "Person",
+      "name": instructor.name,
+      "jobTitle": instructor.title,
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Worketyamo"
+      },
+      "teaches": courseDetail.fullTitle
+    })),
+    "aggregateRating": courseDetail.rating ? {
+      "@type": "AggregateRating",
+      "ratingValue": courseDetail.rating,
+      "ratingCount": courseDetail.reviewCount || 1,
+      "bestRating": 5,
+      "worstRating": 1
+    } : undefined,
+    "review": courseDetail.testimonials?.map(testimonial => ({
+      "@type": "Review",
+      "reviewBody": testimonial.text,
+      "author": {
+        "@type": "Person",
+        "name": testimonial.name,
+        "jobTitle": testimonial.role
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": 5,
+        "bestRating": 5
+      }
+    })),
+    "keywords": [
+      courseDetail.label,
+      "formation",
+      "tech",
+      "bootcamp",
+      "certification",
+      "worketyamo",
+      ...(courseDetail.skills?.map(s => s.name) || []),
+      ...(courseDetail.modules?.flatMap(m => m.topics || []) || [])
+    ].join(", "),
+    "educationalUse": "professional development",
+    "learningResourceType": "course",
+    "interactivityType": "mixed",
+    "typicalAgeRange": "18-65"
+  };
+
+  // Breadcrumb structured data
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Accueil",
+        "item": "https://worketyamo.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Formations",
+        "item": "https://worketyamo.com/#formations"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": courseDetail.fullTitle,
+        "item": `https://worketyamo.com/course/${courseId}`
+      }
+    ]
+  };
+
+  // Organization structured data
+  const organizationData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Worketyamo",
+    "url": "https://worketyamo.com",
+    "logo": "https://worketyamo.com/Images/worketyamo.svg",
+    "description": "Accélérateur de talents tech - Bootcamps intensifs et formation professionnelle",
+    "foundingDate": "2020",
+    "sameAs": [
+      "https://www.linkedin.com/company/worketyamo",
+      "https://twitter.com/worketyamo"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "availableLanguage": ["French", "English"]
+    },
+    "areaServed": {
+      "@type": "Country",
+      "name": "France"
+    },
+    "serviceType": "Educational Services"
+  };
+
   return (
     <div className="">
+      {/* Advanced SEO Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbData)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(organizationData)
+        }}
+      />
+      
       {/* Hero section with simple background styling */}
       <div className="">
       <div 
@@ -296,6 +540,7 @@ export default function CoursePage() {
                    height={40}
                    className='mb-20' 
                    priority
+                   sizes="(max-width: 768px) 160px, 200px"
                  />
           </div>
         
@@ -311,6 +556,8 @@ export default function CoursePage() {
                     width={96}
                     height={96}
                     className="w-full h-full object-contain rounded-lg"
+                    priority
+                    sizes="(max-width: 768px) 96px, 96px"
                   />
                 ) : (
                   <div 

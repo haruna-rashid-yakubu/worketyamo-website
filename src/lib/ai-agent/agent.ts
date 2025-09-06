@@ -138,7 +138,13 @@ Réponds toujours en français, sois précis, engageant et démontre ton experti
     const message = userMessage.toLowerCase();
     const toolCalls: ToolCall[] = [];
 
-    // ALWAYS get course info first if we have a courseId context
+    // Enhanced intent analysis with conversation context
+    const conversationHistory = this.context.sessionHistory.map(m => m.content).join(' ').toLowerCase();
+    const hasDiscussedBasics = conversationHistory.includes('programme') || conversationHistory.includes('module');
+    const hasDiscussedInstructors = conversationHistory.includes('formateur') || conversationHistory.includes('instructeur');
+    const hasDiscussedPrerequisites = conversationHistory.includes('prérequis') || conversationHistory.includes('niveau');
+
+    // ALWAYS get course info first if we have a courseId context (but optimize based on history)
     if (this.context.courseId) {
       toolCalls.push({
         id: `tool_${Date.now()}`,
@@ -230,6 +236,47 @@ Réponds toujours en français, sois précis, engageant et démontre ton experti
       }
     }
 
+    // Career path recommendations
+    if (message.includes('carrière') || 
+        message.includes('débouchés') ||
+        message.includes('objectif professionnel') ||
+        message.includes('plan de carrière') ||
+        message.includes('que faire après')) {
+      if (this.context.courseId) {
+        toolCalls.push({
+          id: `tool_${Date.now() + 4}`,
+          name: 'recommend_career_path',
+          parameters: { 
+            currentCourseId: this.context.courseId,
+            careerGoals: userMessage,
+            experience: 'Extracted from conversation context'
+          }
+        });
+      }
+    }
+
+    // Course comparison requests
+    if (message.includes('comparer') || 
+        message.includes('différence entre') ||
+        message.includes('choisir entre') ||
+        message.includes('versus') ||
+        message.includes('vs')) {
+      // Try to extract course names/IDs from message
+      const courseKeywords = ['aws', 'python', 'docker', 'design', 'terraform', 'github', 'burp', 'ia'];
+      const mentionedCourses = courseKeywords.filter(keyword => message.includes(keyword));
+      
+      if (mentionedCourses.length >= 2) {
+        toolCalls.push({
+          id: `tool_${Date.now() + 5}`,
+          name: 'compare_courses',
+          parameters: { 
+            courseIds: mentionedCourses.slice(0, 3), // Max 3 courses for comparison
+            criteria: ['level', 'duration', 'skills']
+          }
+        });
+      }
+    }
+
     return toolCalls;
   }
 
@@ -305,6 +352,12 @@ Réponds toujours en français, sois précis, engageant et démontre ton experti
             break;
           case 'create_registration':
             responses.push(this.formatRegistrationResponse(toolResult.result));
+            break;
+          case 'compare_courses':
+            responses.push(this.formatComparisonResponse(toolResult.result));
+            break;
+          case 'recommend_career_path':
+            responses.push(this.formatCareerPathResponse(toolResult.result));
             break;
         }
       }
@@ -425,6 +478,97 @@ Réponds toujours en français, sois précis, engageant et démontre ton experti
     } else {
       return `❌ **Problème d'inscription**\n\nDésolé, nous n'avons pas pu finaliser votre inscription. Veuillez :\n• Vérifier vos informations\n• Contacter notre équipe directement\n• Réessayer dans quelques minutes\n\nNotre équipe reste disponible pour vous accompagner !`;
     }
+  }
+
+  private formatComparisonResponse(compResult: any): string {
+    const { courses, comparison, recommendations } = compResult;
+    
+    let response = `📊 **Comparaison de formations** (${courses.length} formations analysées)\n\n`;
+    
+    // Duration comparison
+    if (comparison.duration) {
+      response += `⏱️ **Durée des formations :**\n`;
+      comparison.duration.forEach((item: any) => {
+        response += `• **${item.course}**: ${item.duration || 'Non spécifiée'}\n`;
+      });
+      response += `\n`;
+    }
+    
+    // Level comparison  
+    if (comparison.level) {
+      response += `📈 **Niveau requis :**\n`;
+      comparison.level.forEach((item: any) => {
+        response += `• **${item.course}**: ${item.level || 'Tous niveaux'}\n`;
+      });
+      response += `\n`;
+    }
+    
+    // Skills and modules count
+    if (comparison.skills && comparison.modules) {
+      response += `🎯 **Richesse du contenu :**\n`;
+      comparison.skills.forEach((item: any, index: number) => {
+        const moduleInfo = comparison.modules[index];
+        response += `• **${item.course}**: ${item.skillsCount} compétences • ${moduleInfo.moduleCount} modules\n`;
+      });
+      response += `\n`;
+    }
+    
+    // Recommendations
+    if (recommendations && recommendations.length > 0) {
+      response += `💡 **Recommandations :**\n`;
+      recommendations.forEach((rec: string) => {
+        response += `• ${rec}\n`;
+      });
+    }
+    
+    response += `\n🤔 **Besoin d'aide pour choisir ?** Décrivez-moi vos objectifs et je vous orienterai vers la formation optimale !`;
+    
+    return response;
+  }
+
+  private formatCareerPathResponse(pathResult: any): string {
+    const { currentCourse, recommendedLearningPath, timeEstimate, careerOutcomes, nextSteps, salaryEstimates } = pathResult;
+    
+    let response = `🚀 **Plan de carrière personnalisé**\n\n`;
+    
+    response += `📍 **Votre point de départ :** ${currentCourse}\n\n`;
+    
+    // Learning path
+    if (recommendedLearningPath && recommendedLearningPath.length > 0) {
+      response += `📚 **Parcours de formation recommandé :**\n`;
+      recommendedLearningPath.forEach((course: string, index: number) => {
+        response += `${index + 1}. Formation **${course.toUpperCase()}**\n`;
+      });
+      response += `\n`;
+    }
+    
+    // Time estimate
+    if (timeEstimate) {
+      response += `⏰ **Durée estimée du parcours complet :** ${timeEstimate}\n\n`;
+    }
+    
+    // Career outcomes with salaries
+    if (careerOutcomes && careerOutcomes.length > 0) {
+      response += `💼 **Débouchés professionnels :**\n`;
+      careerOutcomes.forEach((career: string) => {
+        const salary = salaryEstimates[career] ? ` (${salaryEstimates[career]})` : '';
+        response += `• **${career}**${salary}\n`;
+      });
+      response += `\n`;
+    }
+    
+    // Next steps
+    if (nextSteps && nextSteps.length > 0) {
+      response += `🎯 **Étapes concrètes :**\n`;
+      nextSteps.forEach((step: string, index: number) => {
+        response += `${index + 1}. ${step}\n`;
+      });
+      response += `\n`;
+    }
+    
+    response += `💡 **Conseil personnalisé :** Ce plan est optimisé selon vos objectifs ! Souhaitez-vous que je détaille une étape spécifique ?`;
+    
+    return response;
   }
 
   // Public method to get conversation context

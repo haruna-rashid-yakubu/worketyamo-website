@@ -112,3 +112,22 @@ h1, h2, h3, h4, h5, h6, .title, .label, button, label {
   z-index: 1;
   pointer-events: none;
 }
+
+/* Custom scrollbar styles for chat messages */
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #1F2937;
+  border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #4B5563;
+  border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #6B7280;
+}

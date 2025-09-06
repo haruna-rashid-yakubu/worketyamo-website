@@ -16,9 +16,10 @@ interface ChatMessage {
 
 interface AdvancedCourseAIAssistantProps {
   courseDetail: CourseDetailWithTranslations;
+  realCourseId?: string;
 }
 
-export default function AdvancedCourseAIAssistant({ courseDetail }: AdvancedCourseAIAssistantProps) {
+export default function AdvancedCourseAIAssistant({ courseDetail, realCourseId }: AdvancedCourseAIAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -27,6 +28,9 @@ export default function AdvancedCourseAIAssistant({ courseDetail }: AdvancedCour
   const [agentStatus, setAgentStatus] = useState<'idle' | 'thinking' | 'processing' | 'responding'>('idle');
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'connecting'>('connected');
+  const [pageViewTime, setPageViewTime] = useState(0);
+  const [proactiveTriggered, setProactiveTriggered] = useState(false);
+  const [conversationId, setConversationId] = useState<string>('');
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
@@ -43,41 +47,128 @@ export default function AdvancedCourseAIAssistant({ courseDetail }: AdvancedCour
     }
   }, [messages]);
 
-  // Enhanced course-specific suggested questions
-  const getSuggestedQuestions = () => {
+  // Proactive assistance based on page view time
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPageViewTime(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Trigger proactive AI assistance after 30 seconds of viewing
+  useEffect(() => {
+    if (pageViewTime > 30 && !proactiveTriggered && messages.length === 0) {
+      setProactiveTriggered(true);
+      
+      const proactiveMessage: ChatMessage = {
+        id: 'proactive-' + Date.now(),
+        content: `👋 **Assistant Proactif Activé !**
+
+Je vois que vous consultez attentivement **${courseDetail.fullTitle}**. Permettez-moi de vous accompagner !
+
+🎯 **Questions fréquentes sur cette formation :**
+• "Est-ce que cette formation correspond à mon niveau ?"
+• "Combien de temps faut-il pour maîtriser ces compétences ?"
+• "Quels sont les débouchés concrets après cette formation ?"
+
+💡 **Conseil personnalisé :** Décrivez-moi votre parcours actuel, et je vous dirai précisément comment cette formation peut booster votre carrière !
+
+N'hésitez pas à me poser vos questions ! 🚀`,
+        isBot: true,
+        timestamp: new Date(),
+        confidence: 0.95
+      };
+      
+      setMessages([proactiveMessage]);
+    }
+  }, [pageViewTime, proactiveTriggered, messages.length, courseDetail.fullTitle]);
+
+  // Enhanced course-specific suggested questions with AI-powered personalization
+  const getSuggestedQuestions = useCallback(() => {
     const courseName = courseDetail.label;
-    const dynamicSuggestions = [
-      `Détaille-moi le programme complet ${courseName}`,
-      `Suis-je fait pour la formation ${courseName} ?`,
-      `Quelles compétences vais-je maîtriser en ${courseName} ?`,
-      `Qui sont les formateurs de cette formation ?`,
-    ];
+    const userInteractionLevel = messages.length;
+    
+    // Base suggestions that evolve based on conversation
+    let dynamicSuggestions = [];
+    
+    if (userInteractionLevel === 0) {
+      // First-time suggestions - overview focused
+      dynamicSuggestions = [
+        `Détaille-moi le programme complet ${courseName}`,
+        `Suis-je fait pour la formation ${courseName} ?`,
+        `Quelles compétences vais-je maîtriser en ${courseName} ?`,
+        `Qui sont les formateurs de cette formation ?`,
+      ];
+    } else {
+      // Follow-up suggestions - more specific
+      dynamicSuggestions = [
+        `Quels sont les projets pratiques en ${courseName} ?`,
+        `Comment se déroule l'évaluation et la certification ?`,
+        `Quel accompagnement après la formation ?`,
+        `Quels sont les débouchés concrets après ${courseName} ?`,
+      ];
+    }
 
     // Add highly specific suggestions based on course content
     if (courseDetail.modules && courseDetail.modules.length > 0) {
       const firstModule = courseDetail.modules[0];
-      dynamicSuggestions.push(`Explique-moi le module "${firstModule.title}"`);
+      const lastModule = courseDetail.modules[courseDetail.modules.length - 1];
+      
+      if (userInteractionLevel === 0) {
+        dynamicSuggestions.push(`Explique-moi le module "${firstModule.title}"`);
+      } else {
+        dynamicSuggestions.push(`Comment le module "${lastModule.title}" prépare au monde professionnel ?`);
+      }
     }
     
     if (courseDetail.shareable || courseDetail.industryRecognized) {
-      dynamicSuggestions.push(`Quelles certifications vais-je obtenir ?`);
+      if (userInteractionLevel === 0) {
+        dynamicSuggestions.push(`Quelles certifications vais-je obtenir ?`);
+      } else {
+        dynamicSuggestions.push(`Comment valoriser ces certifications sur LinkedIn ?`);
+      }
     }
     
     if (courseDetail.instructors && courseDetail.instructors.length > 0) {
       const instructor = courseDetail.instructors[0];
-      dynamicSuggestions.push(`Parle-moi de ${instructor.name}`);
+      if (userInteractionLevel === 0) {
+        dynamicSuggestions.push(`Parle-moi de ${instructor.name}`);
+      } else {
+        dynamicSuggestions.push(`Comment les formateurs accompagnent-ils individuellement ?`);
+      }
     }
 
     if (courseDetail.testimonials && courseDetail.testimonials.length > 0) {
-      dynamicSuggestions.push(`Quels sont les retours des anciens étudiants ?`);
+      if (userInteractionLevel === 0) {
+        dynamicSuggestions.push(`Quels sont les retours des anciens étudiants ?`);
+      } else {
+        dynamicSuggestions.push(`Quelles réussites professionnelles après cette formation ?`);
+      }
     }
 
     if (courseDetail.skills && courseDetail.skills.length > 0) {
-      dynamicSuggestions.push(`Combien de temps pour devenir opérationnel ?`);
+      if (userInteractionLevel === 0) {
+        dynamicSuggestions.push(`Combien de temps pour devenir opérationnel ?`);
+      } else {
+        dynamicSuggestions.push(`Comment maintenir mes compétences ${courseName} à jour ?`);
+      }
     }
     
-    return dynamicSuggestions.slice(0, 5);
-  };
+    // Smart filtering based on previous questions
+    const askedTopics = messages
+      .filter(m => !m.isBot)
+      .map(m => m.content.toLowerCase());
+      
+    const filteredSuggestions = dynamicSuggestions.filter(suggestion => {
+      const suggestionWords = suggestion.toLowerCase().split(' ');
+      return !askedTopics.some(topic => 
+        suggestionWords.some(word => topic.includes(word) && word.length > 3)
+      );
+    });
+    
+    return filteredSuggestions.slice(0, 5);
+  }, [courseDetail, messages]);
 
   // Advanced message processing with AI agent
   const sendMessage = async (messageContent: string) => {
@@ -106,8 +197,20 @@ export default function AdvancedCourseAIAssistant({ courseDetail }: AdvancedCour
         },
         body: JSON.stringify({
           message: messageContent.trim(),
-          courseId: courseDetail.id,
-          conversationHistory: messages.slice(-10) // Send last 10 messages for context
+          courseId: realCourseId || courseDetail.id,
+          conversationId: conversationId,
+          courseContext: {
+            id: realCourseId || courseDetail.id,
+            label: courseDetail.label,
+            fullTitle: courseDetail.fullTitle,
+            subtitle: courseDetail.subtitle,
+            level: courseDetail.level,
+            duration: courseDetail.scheduleDuration,
+            moduleCount: courseDetail.modules?.length || 0,
+            instructorCount: courseDetail.instructors?.length || 0,
+            skillCount: courseDetail.skills?.length || 0,
+            hasTestimonials: (courseDetail.testimonials?.length || 0) > 0
+          }
         }),
       });
 
@@ -194,10 +297,51 @@ Posez-moi vos questions sur cette formation !`,
     }
   }, [courseDetail.label, messages.length]);
 
+  // Initialize conversation ID and session persistence
+  useEffect(() => {
+    const courseKey = realCourseId || courseDetail.id;
+    
+    // Generate or restore conversation ID
+    let savedConversationId = localStorage.getItem(`ai-conversation-id-${courseKey}`);
+    if (!savedConversationId) {
+      savedConversationId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem(`ai-conversation-id-${courseKey}`, savedConversationId);
+    }
+    setConversationId(savedConversationId);
+
+    // Restore messages
+    const savedMessages = localStorage.getItem(`ai-chat-${courseKey}`);
+    if (savedMessages) {
+      try {
+        const parsed = JSON.parse(savedMessages);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed.map((msg: any) => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp)
+          })));
+          setShowSuggestions(false);
+        }
+      } catch (error) {
+        console.error('Failed to restore chat history:', error);
+      }
+    }
+  }, [courseDetail.id, realCourseId]);
+
+
+  // Save messages to localStorage
+  useEffect(() => {
+    if (messages.length > 0) {
+      const courseKey = realCourseId || courseDetail.id;
+      localStorage.setItem(`ai-chat-${courseKey}`, JSON.stringify(messages));
+    }
+  }, [messages, courseDetail.id, realCourseId]);
+
   // Open chat and initialize
   const openChat = () => {
     setIsOpen(true);
-    initializeChat();
+    if (messages.length === 0) {
+      initializeChat();
+    }
   };
 
   // Close chat
@@ -363,7 +507,13 @@ Posez-moi vos questions sur cette formation !`,
               </div>
 
               {/* Enhanced Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div 
+                className="flex-1 overflow-y-auto p-4 space-y-4 chat-messages"
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#4B5563 #1F2937'
+                }}
+              >
                 {messages.map((message) => (
                   <motion.div
                     key={message.id}
