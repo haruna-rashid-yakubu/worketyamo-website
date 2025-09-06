@@ -83,7 +83,7 @@ export default function CourseNotFound() {
               href="/"
               className="inline-flex items-center px-6 py-3 bg-orange-500 text-white font-heading rounded-lg hover:bg-orange-600 transition-colors mr-4"
             >
-              Retour à l'accueil
+              Retour à l&apos;accueil
             </Link>
             
             <Link 
