@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
-import { PrismaClient } from '@/generated/prisma'
+import { PrismaClient } from '@prisma/client'
 
 const openai = process.env.OPENAI_API_KEY ? new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
