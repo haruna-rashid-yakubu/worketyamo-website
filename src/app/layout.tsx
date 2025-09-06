@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://worketyamo.com'),
   title: {
     default: "Worketyamo | Formations Tech & Bootcamps Certifiants | Accélérateur de Talents",
     template: "%s | Worketyamo"

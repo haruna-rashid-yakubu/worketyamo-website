@@ -84,12 +84,6 @@ export function generateCourseSEO(
           type: 'image/png',
         }
       ],
-      videos: courseDetail.videoUrl ? [{
-        url: courseDetail.videoUrl,
-        width: 1280,
-        height: 720,
-        type: 'video/mp4',
-      }] : undefined,
     },
     
     // Twitter Card optimization
@@ -159,13 +153,6 @@ export function generateCourseSEO(
         index: true,
         follow: true,
         noimageindex: false,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-      bingBot: {
-        index: true,
-        follow: true,
         'max-video-preview': -1,
         'max-image-preview': 'large',
         'max-snippet': -1,
