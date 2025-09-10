@@ -13,12 +13,12 @@ export const metadata: Metadata = {
 
 export default function CourseNotFound() {
   const availableCourses = [
-    { id: 'aws', name: 'Amazon Web Services (AWS)', icon: '/Images/logo-icon/aws-icon.png' },
-    { id: 'python', name: 'Python Développement', icon: '/Images/logo-icon/python-icon.png' },
-    { id: 'docker', name: 'Docker & Conteneurisation', icon: '/Images/logo-icon/docker-icon.png' },
-    { id: 'ux-ui', name: 'UX/UI Design', icon: '/Images/logo-icon/figma-icon.png' },
-    { id: 'ai', name: 'Intelligence Artificielle', icon: '/Images/logo-icon/ai-icon.png' },
-    { id: 'terraform', name: 'Terraform Infrastructure', icon: '/Images/logo-icon/terraform-icon.png' },
+    { id: 'aws', name: 'Amazon Web Services (AWS)', icon: '/Images/aws-certificate.png' },
+    { id: 'python', name: 'Python Développement', icon: '/Images/logo-icon/python.svg' },
+    { id: 'docker', name: 'Docker & Conteneurisation', icon: '/Images/logo-icon/docker.svg' },
+    { id: 'ux-ui', name: 'UX/UI Design', icon: '/Images/logo-icon/figma.svg' },
+    { id: 'ai', name: 'Intelligence Artificielle', icon: '/Images/logo-icon/n8n.svg' },
+    { id: 'terraform', name: 'Terraform Infrastructure', icon: '/Images/logo-icon/terraform.svg' },
   ];
 
   return (

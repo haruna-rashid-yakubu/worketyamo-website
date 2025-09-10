@@ -59,18 +59,11 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/Images/og-image.png",
+        url: "/seo.jpg",
         width: 1200,
         height: 630,
-        alt: "Worketyamo - Formations Tech & Bootcamps Certifiants",
-        type: "image/png",
-      },
-      {
-        url: "/Images/worketyamo-logo-og.png",
-        width: 800,
-        height: 600,
-        alt: "Worketyamo Logo",
-        type: "image/png",
+        alt: "Worketyamo - Tech talent Accelerator - Deep-dive bootcamps and live project experience",
+        type: "image/jpeg",
       }
     ],
   },
@@ -79,7 +72,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Worketyamo | Formations Tech & Bootcamps Certifiants",
     description: "Formations tech intensives & bootcamps certifiants. AWS, Python, Docker, UX/UI, IA.",
-    images: ["/Images/twitter-image.jpg"],
+    images: ["/seo.jpg"],
     creator: "@worketyamo",
     site: "@worketyamo",
   },
