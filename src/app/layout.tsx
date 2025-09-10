@@ -39,13 +39,13 @@ export const metadata: Metadata = {
   
   icons: {
     icon: [
-      { url: "/Images/icons/worketyamo-favicon.png", sizes: "32x32", type: "image/png" },
-      { url: "/Images/icons/worketyamo-favicon-64.png", sizes: "64x64", type: "image/png" },
+      { url: "/Images/icons/worketyamo-favicon-32-rounded.png", sizes: "32x32", type: "image/png" },
+      { url: "/Images/icons/worketyamo-favicon-64-rounded.png", sizes: "64x64", type: "image/png" },
     ],
     apple: [
-      { url: "/Images/icons/worketyamo-apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/Images/icons/worketyamo-apple-touch-icon-rounded.png", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: "/Images/icons/worketyamo-favicon.png",
+    shortcut: "/Images/icons/worketyamo-favicon-32-rounded.png",
   },
   
   manifest: "/manifest.json",
