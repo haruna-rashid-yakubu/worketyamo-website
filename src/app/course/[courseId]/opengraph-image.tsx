@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og';
-import { getCourseDetailAction } from '@/app/actions';
 
 export const runtime = 'edge';
 export const alt = 'Formation Worketyamo';
@@ -9,13 +8,81 @@ export const size = {
 };
 export const contentType = 'image/png';
 
+// Lightweight fallback course data for OG image generation
+const courseData = {
+  'aws': {
+    label: 'AWS Cloud Engineer Associate',
+    fullTitle: 'AWS Cloud Engineer Associate',
+    subtitle: 'Master AWS cloud services and infrastructure with comprehensive training',
+    backgroundColor: 'linear-gradient(135deg, #FF9500 0%, #FF6B35 100%)',
+    rating: 4.8,
+    enrollmentCount: 1250
+  },
+  'ux-ui': {
+    label: 'UX/UI Design',
+    fullTitle: 'UX/UI Design',
+    subtitle: 'Create intuitive, beautiful digital products that users love',
+    backgroundColor: 'linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%)',
+    rating: 4.9,
+    enrollmentCount: 890
+  },
+  'docker': {
+    label: 'Docker',
+    fullTitle: 'Docker & Conteneurisation',
+    subtitle: 'Master containerization for improved efficiency and scalability',
+    backgroundColor: 'linear-gradient(135deg, #0DB7ED 0%, #1793D1 100%)',
+    rating: 4.7,
+    enrollmentCount: 675
+  },
+  'github': {
+    label: 'GitHub Actions',
+    fullTitle: 'GitHub Actions',
+    subtitle: 'Automate workflows with powerful CI/CD capabilities',
+    backgroundColor: 'linear-gradient(135deg, #24292e 0%, #1e2327 100%)',
+    rating: 4.6,
+    enrollmentCount: 520
+  },
+  'python': {
+    label: 'Python Developer',
+    fullTitle: 'Python Developer',
+    subtitle: 'Build real-world applications with Python programming',
+    backgroundColor: 'linear-gradient(135deg, #3776ab 0%, #ffd343 100%)',
+    rating: 4.8,
+    enrollmentCount: 1450
+  },
+  'burp': {
+    label: 'Burp Suite',
+    fullTitle: 'Burp Suite',
+    subtitle: 'Master web security testing and penetration testing',
+    backgroundColor: 'linear-gradient(135deg, #FF4B4B 0%, #C62D2D 100%)',
+    rating: 4.5,
+    enrollmentCount: 340
+  },
+  'ai': {
+    label: 'AI Automation',
+    fullTitle: 'Intelligence Artificielle',
+    subtitle: 'Build intelligent systems and automation workflows',
+    backgroundColor: 'linear-gradient(135deg, #00D2FF 0%, #3A7BD5 100%)',
+    rating: 4.9,
+    enrollmentCount: 980
+  },
+  'terraform': {
+    label: 'Terraform',
+    fullTitle: 'Terraform Infrastructure',
+    subtitle: 'Infrastructure as Code with Terraform',
+    backgroundColor: 'linear-gradient(135deg, #7B42BC 0%, #5C2E91 100%)',
+    rating: 4.7,
+    enrollmentCount: 425
+  }
+};
+
 export default async function OpengraphImage({
   params,
 }: {
   params: { courseId: string };
 }) {
   try {
-    const courseDetail = await getCourseDetailAction(params.courseId);
+    const courseDetail = courseData[params.courseId as keyof typeof courseData];
     
     if (!courseDetail) {
       // Return default OG image if course not found
@@ -30,7 +97,6 @@ export default async function OpengraphImage({
               alignItems: 'center',
               justifyContent: 'center',
               flexDirection: 'column',
-              fontFamily: 'Inter',
             }}
           >
             <div
@@ -66,14 +132,13 @@ export default async function OpengraphImage({
       (
         <div
           style={{
-            background: courseDetail.backgroundGradient || 'linear-gradient(135deg, #21262D 0%, #0a0a0a 100%)',
+            background: courseDetail.backgroundColor || 'linear-gradient(135deg, #21262D 0%, #0a0a0a 100%)',
             width: '100%',
             height: '100%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '60px',
-            fontFamily: 'Inter',
           }}
         >
           {/* Left side - Content */}
@@ -206,7 +271,6 @@ export default async function OpengraphImage({
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'column',
-            fontFamily: 'Inter',
           }}
         >
           <div
